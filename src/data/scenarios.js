@@ -1,0 +1,95 @@
+// Pre-built templates — power Path A ("Use a Pre-Built Template") on the
+// Resource Builder fork screen. Each carries display metadata for its card
+// (title / tag / blurb) plus the `input` payload it pre-fills on the Review
+// screen.
+
+export const scenarios = [
+  {
+    id: "ap-calc",
+    label: "AP Calculus · Derivatives",
+    title: "AP Calculus · Derivatives",
+    tag: "Mathematics",
+    blurb:
+      "Students model rates of change from data they choose and interpret the derivative in context.",
+    input: {
+      subject: "Mathematics",
+      course: "AP Calculus AB",
+      grade: "11-12",
+      topic: "Derivatives as rates of change",
+      studentInterests: "sneaker resale, music streaming, sports analytics",
+      communityContext:
+        "Competitive urban magnet school; many first-gen college-bound students from immigrant families.",
+      learningNeeds: ["Multiple response options", "Neurodiverse supports"],
+      resourceLevel: "high",
+      readingLevel: "on-grade",
+      language: "English",
+      outputType: "lesson",
+    },
+  },
+  {
+    id: "algebra-rural",
+    label: "Algebra · Linear functions (rural)",
+    title: "Algebra · Linear Functions",
+    tag: "Mathematics",
+    blurb:
+      "Students build and compare linear models from local data using paper tools only.",
+    input: {
+      subject: "Mathematics",
+      course: "Algebra I",
+      grade: "9",
+      topic: "Linear functions & slope",
+      studentInterests: "farming, trucks, hunting, local weather",
+      communityContext:
+        "Small rural district; agriculture-centered community; intermittent internet; many students without home wifi.",
+      learningNeeds: ["Wide readiness range", "Low-tech / offline"],
+      resourceLevel: "low",
+      readingLevel: "below-grade",
+      language: "English",
+      outputType: "lesson",
+    },
+  },
+  {
+    id: "env-sci",
+    label: "Environmental Science · Climate resilience",
+    title: "Environmental Science · Climate",
+    tag: "Science",
+    blurb:
+      "Students map heat across their neighborhood and propose one cooling intervention.",
+    input: {
+      subject: "Science",
+      course: "Environmental Science",
+      grade: "10-11",
+      topic: "Climate resilience & urban heat islands",
+      studentInterests: "gardening, basketball courts, local parks, TikTok",
+      communityContext:
+        "Neighborhood with few green spaces and documented summer heat; environmental-justice concerns raised by families.",
+      learningNeeds: ["Project-based", "Multilingual"],
+      resourceLevel: "medium",
+      readingLevel: "mixed",
+      language: "English + Spanish",
+      outputType: "activity",
+    },
+  },
+  {
+    id: "bio-genetics",
+    label: "Biology · Genetics & community health",
+    title: "Biology · Genetics",
+    tag: "Science",
+    blurb:
+      "Students trace an inherited trait and explain the pattern using a Punnett square.",
+    input: {
+      subject: "Science",
+      course: "Biology",
+      grade: "10",
+      topic: "Inheritance, traits & community health",
+      studentInterests: "family recipes, quinceañeras, community clinics, soccer",
+      communityContext:
+        "Predominantly Latine neighborhood; multigenerational households; community health center is a trusted institution.",
+      learningNeeds: ["Multilingual", "Reading-level support"],
+      resourceLevel: "medium",
+      readingLevel: "mixed",
+      language: "English + Spanish",
+      outputType: "lesson",
+    },
+  },
+];

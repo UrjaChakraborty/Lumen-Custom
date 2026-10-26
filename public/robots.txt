@@ -1,0 +1,13 @@
+# Lumen — crawler policy
+# The public marketing/app pages are fine to index; the API is not a page and
+# must never be crawled or surfaced in search results.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Aggressive/AI scraping bots: keep them off the paid API entirely.
+User-agent: GPTBot
+Disallow: /api/
+
+User-agent: CCBot
+Disallow: /api/

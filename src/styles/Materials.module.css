@@ -1,0 +1,523 @@
+/* My materials — white cards on the light page, navy accent, soft shadow, to
+   match the rest of Lumen. */
+
+.page {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 0 3rem;
+}
+
+.head {
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-family: var(--font-head);
+  font-size: clamp(1.7rem, 3.5vw, 2.25rem);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.searchWrap {
+  display: block;
+  width: 100%;
+  max-width: 30rem;
+}
+
+.search {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.search::placeholder {
+  color: var(--muted);
+}
+
+/* iOS Safari zooms the whole page when a focused text field is under 16px, and
+   the teacher then has to pinch back out to see the list they were filtering.
+   The denser size is right on a desktop; on touch the zoom costs more than the
+   density gains. Same rule as the section editor. */
+@media (pointer: coarse) {
+  .search {
+    font-size: 1rem;
+  }
+}
+
+.search:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.filter {
+  min-height: 38px;
+  padding: 0.4rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+/* The pill reads correctly at 38px in a dense filter row on a desktop, but on a
+   touch device it is the control a teacher uses most on this page, so it grows
+   to the touch minimum rather than getting an invisible expander that would
+   overlap the neighbouring pills. */
+@media (pointer: coarse) {
+  .filter {
+    min-height: 44px;
+  }
+}
+
+.filter:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filterOn,
+.filterOn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.filter:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Groups ────────────────────────────────────────────────────────────── */
+.group {
+  padding-top: 2rem;
+}
+
+.groupTitle {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-head);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Only on the orphan group: explains why these items moved. */
+.groupNote {
+  margin: 0.1rem 0 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.unit {
+  padding-top: 0.9rem;
+}
+
+.unitTitle {
+  margin: 0 0 0.55rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.1rem 1.3rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.14);
+}
+
+.itemMain {
+  min-width: 0;
+  flex: 1 1 18rem;
+}
+
+.itemTitle {
+  /* The primary "open this material" control, measured at 23px. 24px satisfies
+     WCAG 2.5.8 for a mouse; touch needs the full 44px, applied below. */
+  display: block;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (pointer: coarse) {
+  .itemTitle {
+    min-height: 44px;
+  }
+}
+
+.itemTitle:hover {
+  color: var(--accent);
+}
+
+.itemTitle:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.itemMeta {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.renameLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin-top: 0.1rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #2563eb;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.renameLink:hover,
+.renameSave:hover {
+  color: #1d4ed8;
+}
+
+.renameLink:focus-visible,
+.renameSave:focus-visible,
+.renameCancel:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.renameForm {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.3rem;
+}
+
+.renameInput {
+  min-width: min(100%, 14rem);
+  min-height: 40px;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.renameInput:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.renameSave,
+.renameCancel {
+  min-height: 40px;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  background: none;
+  color: #2563eb;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.renameCancel {
+  color: var(--muted);
+}
+
+.renameCancel:hover {
+  color: var(--text);
+}
+
+.itemActions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.action,
+.actionQuiet {
+  min-height: 44px;
+  padding: 0.5rem 0.95rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.actionQuiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.actionQuiet:hover {
+  color: var(--error);
+  border-color: var(--border);
+}
+
+.action:focus-visible,
+.actionQuiet:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Empty + no-match ──────────────────────────────────────────────────── */
+.empty {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2.4rem 1.6rem;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.emptyLead {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.emptyBody {
+  margin: 0 0 1.6rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.noMatch {
+  padding-top: 2rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.primary {
+  min-height: 44px;
+  padding: 0.65rem 1.4rem;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 9px;
+  color: var(--on-accent);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.primary:hover {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+}
+
+.primary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .itemActions {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .filter,
+  .action {
+    transition: none;
+  }
+}
+
+/* ── Sort control ─────────────────────────────────────────────────────────── */
+.sortWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+}
+.sortLabel {
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sortSelect {
+  min-height: 44px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+/* Must sit after the base .sortSelect rule above: same specificity, so source
+   order decides, and an earlier coarse block was silently overridden. */
+@media (pointer: coarse) {
+  .sortSelect {
+    font-size: 1rem;
+  }
+}
+
+.sortSelect:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Refile ───────────────────────────────────────────────────────────────
+   Opens inside the row rather than in a dialog: refiling is a small correction
+   made while scanning a list, and a modal would make it feel like a decision. */
+.refile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border);
+}
+.refileField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+.refileField > span {
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.refileField select,
+.refileField input {
+  min-height: 44px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+/* iOS Safari zooms the page when a focused text field is under 16px, and the
+   teacher has to pinch back out to see what they were doing. The denser size is
+   right with a mouse; on touch the zoom costs more than the density gains. */
+@media (pointer: coarse) {
+  .refileField select,
+  .refileField input {
+    font-size: 1rem;
+  }
+}
+.refileField select:focus-visible,
+.refileField input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Which standards a unit already covers, so a gap is visible while planning. */
+.unitStandards {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}

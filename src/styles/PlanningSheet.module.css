@@ -1,0 +1,699 @@
+/* The planning sheet. No card wrapper: the form is the page, which also removes
+   the shadow-on-gray treatment the wizard had. */
+
+.sheet {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 0 4rem;
+}
+
+/* ── Plan header ────────────────────────────────────────────────────────
+   The metadata block a real lesson plan carries. Replaces the "BUILDING:"
+   chip row, which echoed raw field values back including junk input. */
+.planHeader {
+  padding: 0 0 1.1rem;
+  border-bottom: 2px solid var(--text);
+  margin-bottom: 1.8rem;
+}
+
+.headerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.9rem 1.4rem;
+}
+
+.headerCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.headerCellWide {
+  grid-column: 1 / -1;
+}
+
+.headerKey {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.headerVal {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.typeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.typeBtn {
+  min-height: 40px;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.typeBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.typeBtnOn,
+.typeBtnOn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.typeBtn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.assistance {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.assistanceOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.assistanceControls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.85rem;
+}
+
+.customizeLink {
+  min-height: 40px;
+  padding: 0.35rem 0;
+  border: 0;
+  background: none;
+  color: #2563eb;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.customizeLink:hover {
+  color: #1d4ed8;
+}
+
+.customizeLink:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.customizePanel {
+  margin: 0.8rem 0 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.customizePanel legend {
+  padding: 0 0.25rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.customizeOptions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.3rem 1rem;
+}
+
+.customizeOption {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 40px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.customizeOption input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.customizeOption:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.customizeHint {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.assistanceOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.assistanceOption input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.assistanceOption:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.assistanceOptionOn {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  color: var(--text);
+}
+
+.assistanceDescription {
+  margin: 0.5rem 0 0;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+/* "What are you making" is the first real decision on the sheet and the pills
+   sat at 40px. They have room to grow on a phone, so they take the touch
+   minimum outright rather than getting an invisible expander. */
+@media (pointer: coarse) {
+  .typeBtn,
+  .assistanceOption,
+  .customizeLink,
+  .customizeOption {
+    min-height: 44px;
+  }
+}
+
+/* ── Groups ─────────────────────────────────────────────────────────────
+   Left-aligned section labels, not centered conversational questions. */
+.group {
+  margin-bottom: 2.4rem;
+}
+
+.groupTitle {
+  margin: 0 0 1.1rem;
+  font-family: var(--font-head);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0 1.2rem;
+}
+
+/* ── Fields ─────────────────────────────────────────────────────────────
+   Labels are sentence case, dark and full size. Small grey all-caps labels
+   were the default generated-form look. */
+.field {
+  margin-bottom: 1.25rem;
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Helper text above the control: teachers read it before typing. */
+.hint {
+  margin: 0 0 0.4rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+/* A thin left rule marks a template-filled field. Filling the whole field made
+   the form read as selected or disabled. */
+.fieldPrefilled {
+  border-left: 3px solid var(--accent);
+  padding-left: 0.8rem;
+}
+
+.prefillNote {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* 18x27px, and it is the control that undoes a prefilled value — small enough
+   that a teacher would miss it and retype the field instead. It sits in a note
+   line where growing the button would push the layout around, so on touch it
+   gets a centred 44px hit area via ::after. The note lines are far enough apart
+   that the expanded areas of two adjacent fields cannot overlap. */
+.resetBtn {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+@media (pointer: coarse) {
+  .resetBtn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(44px, 100%);
+    height: 44px;
+  }
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 3.4rem;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted);
+}
+
+.input:focus-visible,
+.textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+/* ── Single vs multi select ─────────────────────────────────────────────
+   Radios for one answer, checkboxes for several. They used to be identical
+   chips with no way to tell which was which. */
+.radioRow,
+.checkRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.1rem;
+}
+
+.radio,
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  font-size: 0.95rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.radio input,
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.radio input:focus-visible,
+.check input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Actions ────────────────────────────────────────────────────────────
+   One action, bottom right, where a signature line would be. */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--border);
+}
+
+.generate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 48px;
+  padding: 0.7rem 1.8rem;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  color: var(--on-accent);
+  font-family: inherit;
+  font-size: 1.02rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.generate:hover:not(:disabled) {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+}
+
+.generate:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Start over discards everything, so it sits away from the primary action and
+   is the quietest control on the row. */
+.startOver {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.startOver:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.generate:focus-visible,
+.startOver:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The button keeps its label and gains a spinner beside it, rather than
+   collapsing to a bare spinner with no text. */
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid color-mix(in srgb, var(--on-accent) 45%, transparent);
+  border-top-color: var(--on-accent);
+  border-radius: 50%;
+  animation: sheetSpin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes sheetSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .groupTitle {
+    font-size: 1.2rem;
+  }
+  .actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .generate {
+    justify-content: center;
+  }
+}
+
+/* #113 The screen that replaced the footer disclaimer. Uses the error colour
+   because it is the one place in the builder where something is genuinely
+   wrong and blocking. */
+.piiAlert {
+  margin: 1.6rem 0 0;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--error);
+  border-left-width: 4px;
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.piiTitle {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--error);
+}
+
+.piiBody {
+  margin: 0 0 0.6rem;
+  max-width: 56ch;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+
+.piiList {
+  margin: 0 0 0.9rem;
+  padding-left: 1.15rem;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.piiSample {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  background: var(--surface-2);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.piiDismiss {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-hover);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.piiDismiss:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.piiDismiss:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── #40 Standards picker ────────────────────────────────────────────────── */
+.stdPicker {
+  position: relative;
+}
+
+.stdChosen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.45rem;
+  padding: 0;
+  list-style: none;
+}
+
+/* Mono ink on the page rather than a tinted pill: this is a catalog reference,
+   and a coloured chip would read as a status. */
+.stdChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.stdChipCode {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stdChipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stdChipRemove:hover {
+  background: var(--surface-2, rgba(0, 0, 0, 0.05));
+  color: var(--text);
+}
+
+.stdChipRemove:focus-visible {
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: 1px;
+}
+
+/* Absolute so opening the list does not push the rest of the sheet down. */
+.stdResults {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  max-height: 17rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 6px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+}
+
+.stdResult {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.45rem 0.55rem;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stdResult:hover {
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+}
+
+.stdResult:focus-visible {
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: -2px;
+}
+
+.stdResultOn {
+  background: var(--surface-2, rgba(0, 0, 0, 0.06));
+}
+
+.stdResultHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.stdResultCode {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stdResultFw {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The standard's own text, clamped: teachers recognise a standard by its first
+   clause, and full text would make eight results an unscannable wall. */
+.stdResultText {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 0.1rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+.stdEmpty {
+  padding: 0.6rem 0.55rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+}

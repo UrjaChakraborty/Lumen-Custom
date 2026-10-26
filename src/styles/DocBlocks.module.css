@@ -1,0 +1,646 @@
+/* Structured document blocks. Same typographic register as the document body so
+   they read as part of the plan rather than as app chrome bolted on. */
+
+.block {
+  margin: 1.9rem 0 0;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--border);
+}
+
+.blockTitle {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.blockNote {
+  margin: 0 0 0.7rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.subhead {
+  margin: 0.9rem 0 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Capped measure, matching the document body. */
+.list,
+.prose,
+.checklist {
+  max-width: 68ch;
+}
+
+.list,
+.checklist {
+  margin: 0.35rem 0 0;
+  padding-left: 1.15rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+
+.checklist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.checklist li {
+  position: relative;
+  padding-left: 1.6rem;
+  margin-bottom: 0.35rem;
+}
+
+/* An empty box to tick, since this is a thing the teacher does before class. */
+.checklist li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--border-hover);
+  border-radius: 3px;
+}
+
+.prose {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-dim);
+}
+
+/* ── Term / response pairs (vocabulary, misconceptions) ─────────────────── */
+.vocab {
+  margin: 0.4rem 0 0;
+  max-width: 68ch;
+}
+
+.vocabRow {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.vocabRow:last-child {
+  border-bottom: 0;
+}
+
+.vocabTerm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.cognate {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.vocabDef {
+  margin: 0.2rem 0 0;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.frame {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── Timing table ──────────────────────────────────────────────────────── */
+.timing {
+  width: 100%;
+  max-width: 30rem;
+  margin: 0.4rem 0 0;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+}
+
+.timing td {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.timingLabel {
+  color: var(--text-dim);
+}
+
+.timingMin {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.timingTotal td {
+  border-bottom: 0;
+  border-top: 2px solid var(--text);
+  padding-top: 0.5rem;
+  font-weight: 700;
+}
+
+.timingWarn,
+.timingNote {
+  margin: 0.5rem 0 0;
+  max-width: 46ch;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.timingWarn {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.timingNote {
+  color: var(--muted);
+}
+
+@media print {
+  .block {
+    break-inside: avoid;
+  }
+}
+
+/* ── #53/#56 Two-column procedure ────────────────────────────────────────── */
+/* Grid rather than a table: a table forces the two cells onto one row at every
+   width, and at 375px that gives two ~10ch columns nothing can be read in. */
+.steps {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr 1fr;
+  gap: 0.4rem 1.1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.step:first-child {
+  border-top: 0;
+}
+
+.stepNum {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  padding-top: 0.95rem;
+}
+
+.stepCol {
+  min-width: 0;
+}
+
+/* The column label repeats on every row on purpose. Once the columns stack on a
+   phone, a single header at the top no longer tells you which is which. */
+.stepWho {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+
+.stepText {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .step {
+    grid-template-columns: 1.5rem 1fr;
+  }
+  .stepNum {
+    grid-row: span 2;
+    padding-top: 0.75rem;
+  }
+}
+
+/* ── #57 UDL-tagged accessibility supports ───────────────────────────────── */
+.udlList {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 68ch;
+}
+
+.udlItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.6rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.udlItem:first-child {
+  border-top: 0;
+}
+
+.udlText {
+  flex: 1 1 18ch;
+  min-width: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+
+/* Ink on the page, not a coloured pill: this is a catalog reference, and a
+   tinted chip would compete with the review flags for attention. */
+.udlTag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.15rem 0.4rem;
+  white-space: nowrap;
+}
+
+.udlPrinciple {
+  text-transform: uppercase;
+}
+
+.udlId {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ── #67/#69 Numbered lists, answer key ──────────────────────────────────── */
+.numbered {
+  margin: 0.35rem 0 0;
+  padding-left: 1.35rem;
+  max-width: 68ch;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+
+.numbered li {
+  margin-bottom: 0.35rem;
+}
+
+.keyRow {
+  margin-bottom: 0.9rem;
+}
+
+.keyQ {
+  margin: 0;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.keyA {
+  margin: 0.15rem 0 0;
+  color: var(--text-dim);
+}
+
+/* Worked solutions keep their line breaks and alignment; a proportional font
+   turns a column of aligned equations into a ragged paragraph. */
+.keyWork {
+  margin: 0.35rem 0 0;
+  padding: 0.55rem 0.7rem;
+  background: var(--surface-2, rgba(0, 0, 0, 0.03));
+  border-left: 2px solid var(--border);
+  border-radius: 0 3px 3px 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+/* ── #99/#108 Answer key verification state ──────────────────────────────── */
+.keyRowDisputed {
+  border-left: 3px solid var(--flag, #b0341a);
+  padding-left: 0.7rem;
+  margin-left: -0.85rem;
+}
+
+.keyVerified {
+  margin-left: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.08rem 0.28rem;
+  vertical-align: middle;
+}
+
+.keyDispute {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* #82 Per-block edit control. Hidden until the block is hovered or focused,
+   same as the section tools, so the document does not read as an admin panel. */
+.blockTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.blockEdit {
+  margin-left: auto;
+  min-height: 32px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.block:hover .blockEdit,
+.block:focus-within .blockEdit {
+  opacity: 1;
+}
+
+.blockEdit:hover {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.blockEdit:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: 2px;
+}
+
+@media (hover: none) {
+  .blockEdit {
+    opacity: 1;
+  }
+}
+
+@media (pointer: coarse) {
+  .blockEdit {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media print {
+  .blockEdit {
+    display: none !important;
+  }
+}
+
+/* ── #108 What was actually checked ──────────────────────────────────────── */
+/* Three states with three different marks. An unchecked row must not be able to
+   be mistaken for a passing one at a glance, which is the whole reason this
+   block replaced a static list. */
+.checks {
+  margin: 0.4rem 0 0;
+  max-width: 68ch;
+}
+
+.checkRow {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 0.2rem 1rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.checkRow:first-child {
+  border-top: 0;
+}
+
+.checkLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.checkDetail {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.checkMark {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.check_pass .checkMark {
+  border-color: transparent;
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.check_warn .checkMark {
+  border-color: transparent;
+  background: var(--flag, #b0341a);
+  color: var(--on-accent, #fff);
+}
+
+/* Deliberately quiet rather than alarming. "We did not check this" is
+   information, not a fault, and styling it like a failure would train teachers
+   to ignore the real ones. */
+.check_unchecked .checkMark,
+.check_judgement .checkMark {
+  background: none;
+  color: var(--muted);
+}
+
+.check_warn .checkDetail {
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .checkRow {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}
+
+/* ── Prep strip ──────────────────────────────────────────────────────────── */
+/* Dense on purpose. This is a glance, not a section: the full "Materials and
+   prep" block still carries the same content further down for the printed plan. */
+.prep {
+  margin: 0 0 1.4rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--muted);
+  border-radius: 0 5px 5px 0;
+  background: var(--surface-2, rgba(0, 0, 0, 0.02));
+}
+
+.prepLine {
+  display: flex;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0.18rem 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.prepKey {
+  flex: 0 0 4.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.18rem;
+}
+
+.prepVal {
+  color: var(--text-dim);
+  overflow-wrap: anywhere;
+}
+
+.prepSafety {
+  border-top: 1px solid var(--border);
+  margin-top: 0.3rem;
+  padding-top: 0.4rem;
+}
+
+.prepSafety .prepVal {
+  color: var(--text);
+}
+
+@media (max-width: 480px) {
+  .prepLine {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+}
+
+/* Where the numbers came from. Derived rows, so the origin is the point: the
+   figure reads first, then who vouches for it. A row nobody vouches for is the
+   one the teacher needs to see, so it is the only one that carries colour. */
+.sourceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.sourceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.sourceFigure {
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.sourceOrigin {
+  flex: 0 0 auto;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+.sourceRow[data-origin="no stated source"] .sourceOrigin {
+  color: var(--error);
+  border-color: var(--error);
+}
+.sourceDetail {
+  flex: 1 1 16rem;
+  min-width: 0;
+  color: var(--muted);
+}
+
+/* Rubric. A real table: a teacher reads down a column to grade one piece of work,
+   so the columns have to line up on paper as well as on screen. */
+.rubricScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.rubricTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 32rem;
+}
+.rubricTable th,
+.rubricTable td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.45;
+}
+.rubricTable thead th {
+  background: var(--surface-2);
+  font-weight: 700;
+}
+.rubricTable tbody th {
+  font-weight: 700;
+  white-space: nowrap;
+}
+@media print {
+  .rubricScroll { overflow: visible; }
+  .rubricTable { min-width: 0; font-size: 9.5pt; break-inside: auto; }
+  .rubricTable tr { break-inside: avoid; }
+  .rubricTable th, .rubricTable td { border-color: #000; }
+}

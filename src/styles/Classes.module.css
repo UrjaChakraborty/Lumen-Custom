@@ -1,0 +1,350 @@
+/* My classes — styled to match the existing Lumen surfaces: white cards on the
+   light page, soft shadow, navy accent, rounded corners. */
+
+.page {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 0 3rem;
+}
+
+.head {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.title {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-head);
+  font-size: clamp(1.7rem, 3.5vw, 2.25rem);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.lede {
+  margin: 0 auto;
+  max-width: 46rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.privacy {
+  margin: 1rem auto 0;
+  max-width: 44rem;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+
+/* ── First run ─────────────────────────────────────────────────────────── */
+.firstRun {
+  text-align: center;
+}
+
+.firstRunTitle {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.exampleRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.exampleBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.15rem 1.35rem;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  /* No transform here on purpose. A translateY lift moves the card's bottom
+     edge up and out from under a pointer resting near it, which un-hovers the
+     card, which drops it back, which re-hovers it: a shake loop. Hover reads
+     clearly from the border and shadow alone, and neither moves the hit area. */
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.exampleBtn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
+}
+
+.exampleBtn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.exampleName {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.exampleMeta {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+/* ── Saved classes ─────────────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.classRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.15rem 1.35rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.classMain {
+  min-width: 0;
+}
+
+.className {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.classMeta {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.classActions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.activeTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  color: var(--pill-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.listFoot {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 1.6rem;
+}
+
+/* ── The edit form ─────────────────────────────────────────────────────── */
+.sheet {
+  padding: 1.6rem 1.5rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: 1.2rem;
+  align-items: start;
+  padding: 0.75rem 0;
+}
+
+.row + .row {
+  border-top: 1px solid var(--border);
+}
+
+.rowLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-top: 0.5rem;
+}
+
+.rowLabel label {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rowHint {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.rowEntry {
+  min-width: 0;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* iOS Safari zooms the page when a focused text field is under 16px, and the
+   teacher has to pinch back out to see what they were doing. The denser size is
+   right with a mouse; on touch the zoom costs more than the density gains. */
+@media (pointer: coarse) {
+  .input,
+  .textarea {
+    font-size: 1rem;
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 3.4rem;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted);
+}
+
+.input:focus-visible,
+.textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.sheetFoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 1.3rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.primary {
+  min-height: 44px;
+  padding: 0.6rem 1.4rem;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 9px;
+  color: var(--on-accent);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.primary:hover {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+}
+
+.ghost,
+.ghostQuiet {
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.ghostQuiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ghostQuiet:hover {
+  color: var(--error);
+  border-color: var(--border);
+}
+
+.primary:focus-visible,
+.ghost:focus-visible,
+.ghostQuiet:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .rowLabel {
+    padding-top: 0;
+  }
+  .sheet {
+    padding: 1.2rem 1rem;
+  }
+  .classActions {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exampleBtn {
+    transition: none;
+  }
+}
+
+/* How much work is filed against this class. A section with nothing in it reads
+   differently from one with a term's worth, and that difference is worth seeing
+   without opening it. */
+.classCount {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}

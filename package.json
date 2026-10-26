@@ -1,0 +1,28 @@
+{
+  "name": "lumen",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lumen — an AI dashboard that helps high school STEM teachers generate culturally responsive, accessible, and differentiated lesson plans, activities, assessments, and feedback.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "eval": "node evals/run.mjs",
+    "eval:live": "node evals/run.mjs --live",
+    "security": "node evals/security.mjs",
+    "test:data": "node evals/data-safety.mjs",
+    "security:client": "node evals/client-security.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^2.15.0",
+    "framer-motion": "^11.18.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "playwright": "^1.49.0",
+    "vite": "^5.4.11"
+  }
+}

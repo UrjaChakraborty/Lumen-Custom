@@ -1,0 +1,4149 @@
+.wizardPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* Animated content wrapper — holds everything below the sticky header so the
+   step-transition slide doesn't put a transform on the sticky element's
+   ancestor chain (which makes position:sticky jitter on iOS). */
+.wizardContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.pageTitle {
+  font-size: clamp(1.45rem, 3.5vw, 1.85rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--text);
+}
+
+/* ── Context badge strip (Step 2 — shows what was selected in Step 1) ── */
+.contextBadgeStrip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  max-width: 980px;
+  padding: 0.1rem 0;
+}
+
+.contextBadgeLabel {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  margin-right: 0.15rem;
+}
+
+.contextBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.65rem;
+  border-radius: 99px;
+  background: var(--surface-2);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.progressBlock {
+  width: 100%;
+  max-width: 980px;
+}
+
+/* On mobile the breadcrumb + progress bar stick below the header as the user
+   scrolls through results, so "Metrics"/"Location" stay one tap away. The
+   content column and result cards share this width, so they scroll cleanly
+   under the opaque strip. */
+@media (max-width: 720px) {
+  .progressBlock {
+    position: sticky;
+    top: 60px;
+    z-index: 30;
+    background: var(--bg);
+    padding: 0.6rem 0 0.5rem;
+    box-shadow: 0 8px 14px -8px rgba(0, 0, 0, 0.18);
+  }
+
+  .progressBlock .stepNav {
+    margin-bottom: 0.45rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .progressBlock {
+    top: 58px;
+  }
+}
+
+/* ── B1/D2: clickable step breadcrumb ─────────────────────────────────────── */
+.stepNav {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0 0 0.55rem;
+  padding: 0;
+}
+
+.stepNavLi {
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.stepNavItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.5rem;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.stepNavMarker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1.5px solid currentColor;
+  flex-shrink: 0;
+}
+
+.stepNavDone {
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.stepNavDone .stepNavMarker {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.stepNavDone:hover {
+  background: var(--badge-bg);
+}
+
+.stepNavCurrent {
+  color: var(--text);
+}
+
+.stepNavCurrent .stepNavMarker {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.stepNavUpcoming {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.stepNavSep {
+  width: clamp(0.75rem, 4vw, 2.5rem);
+  height: 1.5px;
+  background: var(--border);
+  margin: 0 0.15rem;
+  flex-shrink: 1;
+}
+
+.stepNavDone:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .stepNavItem {
+    min-height: 44px;
+  }
+}
+
+.stepNavLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Narrow screens can't fit four labelled steps in one row. Collapse to numbered
+   markers and keep only the current step's label, so the row still says where
+   you are without wrapping or clipping. */
+@media (max-width: 560px) {
+  .stepNavItem {
+    font-size: 0.76rem;
+    padding: 0.4rem 0.3rem;
+    gap: 0.3rem;
+  }
+  .stepNavItem .stepNavLabel {
+    display: none;
+  }
+  .stepNavCurrent .stepNavLabel {
+    display: inline;
+  }
+  .stepNavMarker {
+    width: 22px;
+    height: 22px;
+  }
+  .stepNavSep {
+    width: clamp(0.4rem, 3vw, 1.25rem);
+  }
+}
+
+.progressRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.progressPct {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.progressTrack {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card {
+  width: 100%;
+  max-width: 980px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.75rem 2rem 1.6rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.question {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+  line-height: 1.35;
+}
+
+.questionSub {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+/* ── Metric groups ── */
+.metricGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.metricGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.metricGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.metricGroupLabel {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.metricGroupCount {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+  letter-spacing: 0.04em;
+}
+
+.selectAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.08rem 0.55rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  margin-left: auto;
+}
+
+/* Touch devices: keep the pill's visual size but stretch the hit area to 44px. */
+@media (pointer: coarse) {
+  .selectAllBtn {
+    position: relative;
+  }
+  .selectAllBtn::after {
+    content: "";
+    position: absolute;
+    inset: 50% 0 0 0;
+    min-height: 44px;
+    transform: translateY(-50%);
+  }
+}
+
+.selectAllBtn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--badge-bg);
+}
+
+.selectAllBtnActive {
+  color: var(--accent);
+  border-color: var(--badge-border);
+  background: var(--badge-bg);
+}
+
+.choiceList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.choice {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  transition: border-color 0.15s, box-shadow 0.15s, color 0.15s, background 0.15s;
+}
+
+.choice:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.choiceCheck {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 1em;
+  opacity: 0.4;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.choiceSelected .choiceCheck {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.choiceIcon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.choiceSelected .choiceIcon {
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
+  .choiceList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .choiceList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1060px) {
+  .wizardPage,
+  .progressBlock,
+  .card,
+  .footerNav,
+  .resultsSection {
+    max-width: 100%;
+  }
+
+  .card {
+    padding: 1.75rem 1.5rem 1.5rem;
+    border-radius: 16px;
+  }
+
+  .question {
+    font-size: 1.25rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .questionSub {
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .choiceList {
+    gap: 0.7rem;
+  }
+
+  .choice {
+    padding: 1rem 1rem;
+    font-size: 0.95rem;
+    border-radius: 12px;
+  }
+
+  .progressRow {
+    font-size: 0.8rem;
+  }
+
+  .btnBack,
+  .btnPrimary {
+    font-size: 0.9rem;
+    padding: 0.62rem 1.1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .wizardPage {
+    gap: 1.25rem;
+  }
+
+  .pageTitle {
+    font-size: clamp(1.2rem, 7vw, 1.55rem);
+  }
+
+  .progressTrack {
+    height: 6px;
+  }
+
+  .question {
+    font-size: 1.08rem;
+  }
+
+  .questionSub {
+    font-size: 0.82rem;
+  }
+
+  .choice {
+    font-size: 0.88rem;
+    padding: 0.85rem 0.8rem;
+  }
+
+  .fieldLabel {
+    font-size: 0.6rem;
+  }
+
+  .select {
+    font-size: 0.84rem;
+    padding: 0.68rem 2rem 0.68rem 0.78rem;
+    border-radius: 10px;
+  }
+
+  .footerNav {
+    gap: 0.7rem;
+  }
+
+  .btnBack,
+  .btnPrimary {
+    font-size: 0.85rem;
+    padding: 0.58rem 0.95rem;
+    border-radius: 10px;
+  }
+
+  /* Reduce stat card padding on narrow screens */
+  .card {
+    padding: 1.25rem 1rem 1.1rem;
+    border-radius: 14px;
+  }
+
+  .statCard {
+    padding: 1.25rem 1.1rem 1rem;
+    border-radius: 14px;
+  }
+
+  .statValue {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+  }
+
+  .compareCard {
+    padding: 1rem 1rem 1rem;
+    border-radius: 12px;
+  }
+
+  .metricGroupLabel {
+    font-size: 0.74rem;
+  }
+
+  .metricGroupHeader {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .btnCompare {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .compareSection {
+    flex-direction: column;
+  }
+
+  .compareActions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .compareActions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .resultsSection {
+    margin-top: 1.25rem;
+  }
+
+  .btnStartNew {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bottomActions {
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* Touch-target sizing: ensure the key result-card actions clear the 44–48px
+   minimum so they're comfortable to tap on mobile. */
+@media (max-width: 720px) {
+  .statChartBtn,
+  .btnCompare,
+  .btnStartNew {
+    min-height: 46px;
+  }
+}
+
+.choice:hover {
+  border-color: var(--accent);
+}
+
+.choiceSelected,
+.choiceSelected:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.footerNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  width: 100%;
+  max-width: 980px;
+}
+
+.btnBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s, opacity 0.15s;
+}
+
+.btnBack:hover {
+  border-color: var(--border-hover);
+}
+
+/* Save to My materials: same weight as the builder's other primary actions so
+   it reads as part of the original toolbar rather than a bolted-on control. */
+.btnSaveMaterial {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btnSaveMaterial:hover:not(:disabled) {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+}
+
+.btnSaveMaterial:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnSaveMaterial:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.savedFlag {
+  align-self: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 9px;
+  border: none;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #143664;
+}
+
+html[data-theme="dark"] .btnPrimary:hover:not(:disabled) {
+  background: #5b8ec5;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+/* Active (enabled) primary button — vivid accent */
+.btnPrimaryActive,
+.btnPrimaryActive:hover {
+  background: var(--accent-2) !important;
+}
+
+html[data-theme="dark"] .btnPrimaryActive,
+html[data-theme="dark"] .btnPrimaryActive:hover {
+  background: var(--accent) !important;
+}
+
+.fieldGroup {
+  margin-bottom: 1.1rem;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 0.55rem;
+  text-transform: uppercase;
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.9rem 2.5rem 0.9rem 1rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.select:focus,
+.select:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+
+.btnBack:focus-visible,
+.btnPrimary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.statChartBtn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.select option {
+  background: var(--select-option-bg);
+  color: var(--text);
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+/* ── Searchable city combobox ── */
+.comboboxWrap {
+  position: relative;
+}
+
+.comboboxInput {
+  width: 100%;
+  appearance: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.9rem 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.comboboxInput::placeholder {
+  color: var(--text-dim);
+  opacity: 0.75;
+}
+
+.comboboxInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.comboboxInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.comboboxList {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.35rem 0;
+  max-height: 220px;
+  overflow-y: auto;
+  list-style: none;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  scrollbar-width: thin;
+}
+
+.comboboxItem {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.88rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.comboboxItem:hover,
+.comboboxItemActive {
+  background: var(--surface-2);
+}
+
+.comboboxItemSelected {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.comboboxCheck {
+  font-size: 0.75rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.comboboxEmpty {
+  padding: 0.55rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Row wrapper: input + loading badge side by side */
+.searchInputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Loading badge to the right of the search input */
+.searchLoadingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--accent-glow);
+  border: 1px solid var(--badge-border);
+}
+
+.searchLoadingSpinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Place result: city bold, state muted */
+.placeResultCity {
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.placeResultState {
+  color: var(--muted);
+  font-size: 0.84rem;
+  margin-left: 0.3em;
+}
+
+/* ── State pill (PlacePicker) ── */
+.statePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem 0.25rem 0.65rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.statePillName {
+  line-height: 1;
+}
+
+.statePillClear {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.1rem;
+  border-radius: 50%;
+  transition: color 0.15s;
+}
+
+.statePillClear:hover {
+  color: var(--text);
+}
+
+.resultsSection {
+  width: 100%;
+  max-width: 980px;
+  margin-top: 2rem;
+}
+
+.resultsTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+}
+
+.resultStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Result grid & animated stat cards ── */
+.resultGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .resultGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resultGridCompare {
+  grid-template-columns: 1fr;
+}
+
+.statCardPair {
+  display: flex;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.statCardPair > .statCard {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .statCardPair {
+    flex-direction: column;
+  }
+}
+
+.statCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.9rem 2.1rem 1.7rem;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: cardReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--card-accent, var(--accent));
+  border-radius: 20px 0 0 20px;
+}
+
+.statCard:hover {
+  border-color: var(--accent);
+  box-shadow: var(--result-glow);
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.statMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+}
+
+.statIcon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--accent));
+}
+
+.statValue {
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+  text-shadow: var(--result-value-shadow);
+}
+
+.statLocation {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+}
+
+.statDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.25rem 0 1rem;
+}
+
+.statChartBtn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.statChartBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.statChartBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.statChartBtnActive {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.statSource {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 1.75rem;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+}
+
+.inlineChart {
+  margin-top: 1rem;
+}
+
+/* ── Smooth accordion reveal for the inline trend chart ──────────────────────
+   The CSS-grid 0fr→1fr trick animates the row height so the chart unrolls and
+   eases the content below it down, instead of the page snapping open. */
+.chartCollapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+.chartCollapseOpen {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.chartCollapseInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chartCollapse {
+    transition: none;
+  }
+}
+
+.trendSummary {
+  margin-top: 0.75rem;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+/* ── Stat card value row (primary + compare side-by-side) ── */
+.statValueRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.cmpValueBlock {
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.cmpValue {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 800;
+  color: var(--accent-2);
+  letter-spacing: -0.025em;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+
+html[data-theme="dark"] .cmpValue {
+  color: var(--accent);
+}
+
+.cmpLocation {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ── Compare section ── */
+.compareSection {
+  width: 100%;
+  max-width: 980px;
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btnCompare {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 11px;
+  border: 1.5px dashed var(--border-hover);
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.btnCompare:hover {
+  border-color: var(--accent);
+  background: transparent;
+}
+
+.compareCard {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem 1.75rem 1.4rem;
+}
+
+.compareTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.compareFields {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.compareActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* ── Bottom "Start New Lookup" button ── */
+.bottomActions {
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+  padding-bottom: 2rem;
+}
+
+.btnStartNew {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.btnStartNew:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+
+.excludedNote {
+  width: 100%;
+  max-width: 980px;
+  margin: 1.25rem auto 0;
+  /* Was 0.72rem/--muted (6.8:1): technically AA, but too faint to read at that
+     size for a privacy notice. --text-dim lifts it to ~10:1. */
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.excludedNoteLabel {
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* ── Lumen Resource Builder additions (Explore shell) ── */
+.textArea {
+  width: 100%;
+  appearance: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.9rem 1rem;
+  outline: none;
+  resize: vertical;
+  min-height: 6.5rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.textArea::placeholder {
+  color: var(--text-dim);
+  opacity: 0.75;
+}
+
+.textArea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.fieldHint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.45rem;
+  line-height: 1.45;
+}
+
+.fieldsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+}
+
+.fieldsGridFull {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 560px) {
+  .fieldsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.resultActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.resultActionBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.resultActionBtnActive {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--badge-bg);
+}
+
+.docSectionBody {
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.docSectionBody p {
+  margin: 0;
+}
+
+.docSectionBody ul {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.docSectionBody li {
+  margin-bottom: 0.35rem;
+}
+
+.docSectionBody li:last-child {
+  margin-bottom: 0;
+}
+
+/* ══ Document Canvas — one continuous scrollable "doc", not a stack of cards ══ */
+.resultsWrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  /* clear the fixed AI Assistant toolbar pinned to the bottom */
+  padding-bottom: 9rem;
+}
+
+/* The document's own action row sits above the canvas: Back, Save, Start over.
+   Padding put these at 41-42px, just under the touch minimum, and they are the
+   controls a teacher uses to leave the screen or keep their work. */
+@media (pointer: coarse) {
+  .btnBack,
+  .btnSaveMaterial {
+    min-height: 44px;
+  }
+}
+
+.docTopNav {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  /* Wraps rather than overflowing. Four controls (Back, Save, the saved flag,
+     Start over) need 333px, so at 320px "Start over" was pushed off the edge
+     with nothing to scroll to — the button existed and could not be reached. */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.docCanvas {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  /* #49/#79 Clearance for the revision dock at the bottom of the viewport. The
+     dock is a single compact button now rather than a full-width bar, so this
+     only has to clear that, not an expanded panel. */
+  margin-bottom: 5.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+}
+
+/* Glowing pulse around the whole doc while a revision is in flight. */
+.docCanvasRevising {
+  border-color: var(--accent);
+  animation: reviseGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes reviseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px var(--accent), 0 18px 50px rgba(0, 0, 0, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--accent-glow), 0 18px 50px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Sticky export/version header. `top` is set inline to the site nav's height. */
+.docToolbar {
+  position: sticky;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  border-radius: 17px 17px 0 0;
+}
+
+.docToolbarLeft {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.docToolbarActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.docActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.docActionBtn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.docActionBtnActive {
+  background: var(--accent-glow);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.docActionDivider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 0.25rem;
+}
+
+.reviewBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.2rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* Version control */
+.versionControl {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* min-width:0 overrides the flex default of auto, which would otherwise hold
+     this row at its content width and let the version strip overflow. */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.undoBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.undoBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.undoBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* A draft can reach 11 versions (original + 10 rewrites), which overflows the
+   toolbar on a phone. Let the strip scroll sideways instead of clipping. */
+.versionPills {
+  display: flex;
+  gap: 0.25rem;
+  /* basis 0 so the strip takes the leftover width and scrolls inside itself,
+     rather than sizing to its content and pushing the toolbar wider */
+  flex: 1 1 0;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-inline: 0.25rem;
+}
+
+.versionPills::-webkit-scrollbar {
+  display: none;
+}
+
+.versionPill {
+  flex: 0 0 auto;
+  min-width: 2rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.versionPill:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.versionPillActive,
+.versionPillActive:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Dim + message overlay during a revision */
+.reviseOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5.5rem;
+  border-radius: 18px;
+  /* Heavy blur so the draft underneath is clearly still text but unreadable —
+     it should be obvious the document is being rewritten, not just dimmed.
+     The tint stays light so the blurred text shows through. */
+  background: color-mix(in srgb, var(--surface) 28%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Pinned rewrite status. Fixed to the viewport so it stays put however far the
+   user scrolls, and above the AI toolbar (z 60) and site nav (z 50) so nothing
+   can paint over it. `top` is set inline from the measured sticky stack. */
+/* Sticky within the document canvas, not fixed to the viewport: the badge starts
+   beside the document title and sticks just under the toolbar while the document
+   scrolls, then leaves with the document rather than hovering over the page
+   header. `top` is set inline from the measured sticky stack (nav + toolbar).
+   height:0 keeps it out of flow so the text below never shifts when it appears. */
+.reviseStatus {
+  position: sticky;
+  top: 6rem;
+  z-index: 25;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.reviseOverlayBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+@media (max-width: 720px) {
+  .reviseOverlayBadge {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.9rem;
+    text-align: center;
+  }
+}
+
+/* The document body — typography + spacing, no card chrome */
+.docBody {
+  position: relative;
+  padding: 2.4rem clamp(1.4rem, 4vw, 3rem) 2.9rem;
+  animation: docReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes docReveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.docBody .sourceBadge {
+  margin-bottom: 0.85rem;
+}
+
+.docTitle {
+  font-family: var(--font-head);
+  font-size: clamp(1.85rem, 4.5vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0 0 0.85rem;
+}
+
+.docMetaPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.docMetaPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  color: var(--pill-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.docSection {
+  margin-bottom: 2rem;
+}
+
+.docSection:last-child {
+  margin-bottom: 0;
+}
+
+.docSectionHeading {
+  /* Flex so the minutes sit beside the label and the per-section tools can push
+     to the far edge with margin-left:auto. Wraps rather than overflowing, which
+     is what keeps a long heading plus three tools inside 375px. */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.5rem;
+  font-family: var(--font-head);
+  font-size: 1.22rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0 0 0.65rem;
+}
+
+/* Skeleton doc while the first draft generates */
+.skelTitle {
+  height: 2.2rem;
+  width: 70%;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.skelPill {
+  height: 1.4rem;
+  width: 5rem;
+  border-radius: 999px;
+}
+
+/* Bias & fit review — right-hand slide-in drawer */
+.drawerScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.reviewDrawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 121;
+  width: min(400px, 92vw);
+  height: 100vh;
+  height: 100dvh;
+  padding: 1.5rem 1.4rem;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reviewDrawerHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.reviewDrawerTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.reviewDrawerSummary {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin: 0.15rem 0 0;
+}
+
+.drawerClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.drawerClose:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 32px reads correctly beside a drawer heading but is under the touch minimum,
+   so on a coarse pointer it grows to a real 44px rather than getting an
+   invisible expander: nothing sits close enough for the larger box to overlap. */
+@media (pointer: coarse) {
+  .drawerClose {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Persistent AI Assistant — floating bottom-center toolbar */
+/* #79 At rest this is a compact dock in the bottom-right corner, clear of the
+   centred document. Only when the teacher opens it does it become a panel, and
+   opening is their choice. Previously it was a permanent full-width bar sitting
+   on top of the last 164px of every draft. */
+.aiToolbar {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 60;
+  /* max-content, not auto: with `left` resolving to a static position the box
+     stretched to the full column instead of shrink-wrapping the dock. */
+  left: auto;
+  width: max-content;
+  max-width: calc(100vw - 2.5rem);
+}
+
+.aiToolbarOpen {
+  /* Open, it centres on the document like a drawer and takes its width. */
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(860px, 94vw);
+}
+
+.aiDock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+.aiDock:hover {
+  border-color: var(--accent);
+}
+
+.aiDock:focus-visible {
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: 2px;
+}
+
+.aiDockCount {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding-left: 0.45rem;
+  border-left: 1px solid var(--border);
+}
+
+.aiDrawerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.15rem;
+}
+
+.aiDrawerTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* An author `display` declaration beats the UA stylesheet's [hidden] rule, so
+   the closed drawer stayed laid out and kept the toolbar at full width even
+   though nothing was visible. */
+.aiToolbarInner[hidden] {
+  display: none;
+}
+
+.aiToolbarInner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
+}
+
+.aiChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Desktop shows all five chips inline; the toggle only exists on mobile, where
+   the media query below reveals it and collapses the chips behind it. */
+.aiChipsToggle {
+  display: none;
+}
+
+/* Gradient border = "this triggers an AI regeneration" */
+.aiChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(120deg, var(--accent), var(--accent-2)) border-box;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.aiChip svg {
+  color: var(--accent);
+}
+
+.aiChip:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--accent-glow);
+}
+
+.aiChip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.aiPromptRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border);
+}
+
+.aiPromptIcon {
+  display: inline-flex;
+  color: var(--accent);
+  flex-shrink: 0;
+  padding-left: 0.3rem;
+}
+
+.aiPromptInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.4rem;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+/* iOS Safari zooms the page when a focused text field is under 16px, and the
+   teacher has to pinch back out to see what they were doing. The denser size is
+   right with a mouse; on touch the zoom costs more than the density gains. */
+@media (pointer: coarse) {
+  .aiPromptInput {
+    font-size: 1rem;
+  }
+}
+
+.aiPromptInput::placeholder {
+  color: var(--muted);
+}
+
+.aiPromptSend {
+  flex-shrink: 0;
+  min-width: 92px;
+  padding: 0.5rem 1rem;
+  border-radius: 9px;
+  border: none;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.aiPromptSend:hover:not(:disabled) {
+  background: #143664;
+}
+
+html[data-theme="dark"] .aiPromptSend:hover:not(:disabled) {
+  background: #5b8ec5;
+}
+
+.aiPromptSend:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Rewrite allowance, e.g. "3/10" — sits beside the Rewrite button. */
+.reviseCounter {
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.reviseCounterMax {
+  color: var(--danger, #b3261e);
+}
+
+html[data-theme="dark"] .reviseCounterMax {
+  color: #f2857c;
+}
+
+@media (max-width: 720px) {
+  /* clear the mobile bottom nav */
+  .aiToolbar {
+    bottom: 4.75rem;
+  }
+
+  /* Five stacked chips took ~40% of a phone screen and buried the draft the
+     teacher just generated. Collapse them behind a toggle; the prompt field,
+     Rewrite button and counter stay reachable at all times. */
+  .aiChipsToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .aiChipsToggle:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .aiChipsChevronOpen {
+    transform: rotate(180deg);
+  }
+
+  .aiChips {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    max-height: min(46vh, 320px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .aiChipsOpen {
+    display: flex;
+  }
+
+  .aiChips .aiChip {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+
+@media (pointer: coarse) {
+  .docActionBtn,
+  .aiChip,
+  .aiPromptSend,
+  .undoBtn,
+  .versionPill {
+    min-height: 44px;
+  }
+  .aiPromptInput {
+    min-height: 44px;
+    /* iOS Safari zooms the page when a focused input is under 16px. */
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docCanvasRevising,
+  .docBody {
+    animation: none;
+  }
+}
+
+@media print {
+  .docTopNav,
+  .docToolbar,
+  .aiToolbar,
+  .drawerScrim,
+  .reviewDrawer {
+    display: none !important;
+  }
+  .resultsWrap {
+    padding-bottom: 0;
+  }
+  .docCanvas {
+    box-shadow: none;
+    border: none;
+    max-width: none;
+  }
+}
+
+.reviseChoiceList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+@media (max-width: 560px) {
+  .reviseChoiceList {
+    grid-template-columns: 1fr;
+  }
+}
+
+.checkList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.checkRow {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+}
+
+.checkMark {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  color: var(--accent);
+}
+
+.checkMarkFail {
+  color: #b45309;
+  border-color: #f0d0a0;
+  background: #fff7ed;
+}
+
+html[data-theme="dark"] .checkMarkFail {
+  color: #fbbf24;
+  border-color: #78350f;
+  background: #292217;
+}
+
+.checkTitle {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.checkNote {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+  line-height: 1.4;
+}
+
+/* ── Screen-reader only utility ── */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Shimmer skeleton loading cards (draft generation) ─────────────────────── */
+.skeletonCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.9rem 2.1rem 1.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  opacity: 0;
+  animation: cardReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.skelLine {
+  position: relative;
+  overflow: hidden;
+  height: 0.95rem;
+  width: 100%;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+.skelLabel {
+  height: 0.7rem;
+  width: 28%;
+  border-radius: 5px;
+}
+
+.skelHeading {
+  height: 1.6rem;
+  width: 62%;
+  margin-bottom: 0.4rem;
+  border-radius: 8px;
+}
+
+.skelLine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--text) 9%, transparent),
+    transparent
+  );
+  animation: skelShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skelShimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ── 3-dot typing / drafting indicator ─────────────────────────────────────── */
+.typingIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.typingDots {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.typingDots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+
+.typingDots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typingDots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typingBounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* ── Inline combobox "Searching…" badge ────────────────────────────────────── */
+.comboSearching {
+  position: absolute;
+  top: 50%;
+  right: 0.7rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.comboSpinner {
+  width: 11px;
+  height: 11px;
+  border: 2px solid color-mix(in srgb, var(--text) 22%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skelLine::after,
+  .typingDots i,
+  .comboSpinner {
+    animation: none;
+  }
+}
+
+/* ══ Fork screen (Path A: templates · Path B: build from scratch) ══════════ */
+.forkIntro {
+  width: 100%;
+  max-width: 980px;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+/* The block is centred on the page as a unit; text inside stays flush-left so
+   the section titles and the card edges share one clean vertical line. */
+.pathSection {
+  width: 100%;
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.pathSection + .pathSection {
+  margin-top: 2.25rem;
+}
+
+.pathHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.1rem;
+  padding: 0;
+  text-align: left;
+}
+
+.pathTitle {
+  margin: 0;
+  font-family: var(--font-head, inherit);
+  font-size: 1.24rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.pathSub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (max-width: 620px) {
+  .templateGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.templateCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  padding: 1.25rem 1.35rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.templateCard:hover {
+  border-color: var(--accent);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
+  transform: translateY(-2px);
+}
+
+.templateCard:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.templateCardTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.6rem;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  color: var(--pill-text);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Per-subject tints so categories are scannable at a glance. Colour is a second
+   channel only — the label still names the subject. */
+.templateCardTagMath {
+  background: #dce8f6;
+  border-color: #adc6e6;
+  color: #143567;
+}
+
+.templateCardTagScience {
+  background: #dcefe1;
+  border-color: #a9d3b6;
+  color: #1a4d2e;
+}
+
+html[data-theme="dark"] .templateCardTagMath {
+  background: rgba(122, 167, 217, 0.2);
+  border-color: rgba(122, 167, 217, 0.45);
+  color: #b9d4f0;
+}
+
+html[data-theme="dark"] .templateCardTagScience {
+  background: rgba(125, 196, 150, 0.18);
+  border-color: rgba(125, 196, 150, 0.42);
+  color: #a8dcbb;
+}
+
+.templateCardTitle {
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.templateCardBlurb {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* margin-top:auto pins the CTA to the bottom so cards of any height line up.
+   Solid fill matches the scratch card's button so neither path is visually
+   promoted over the other. */
+/* #6 Plain text, not a filled control. The whole card is already the button,
+   and a button inside a card is a card pretending to be a button. */
+.templateCardCta {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  color: var(--accent);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.templateCard:hover .templateCardCta {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+
+
+.scratchCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  /* Uniform padding so the CTA's gap to the right edge matches the top/bottom. */
+  padding: 1.25rem;
+  border-radius: 16px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.scratchCard:hover {
+  border-color: var(--accent);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
+  transform: translateY(-2px);
+}
+
+.scratchCard:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.scratchIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--accent);
+  border: none;
+  color: var(--on-accent);
+  flex-shrink: 0;
+}
+
+.scratchText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.scratchTitle {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.scratchSub {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* Pinned to the right edge of the card, its gap matching the card's padding. */
+.scratchCta {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.88rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+/* The icon and CTA are both flex-shrink:0, so below ~560px the row can't fit
+   and the CTA clips off the right edge. Stack instead. */
+@media (max-width: 560px) {
+  .scratchCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.1rem 1.15rem;
+  }
+  .scratchText {
+    width: 100%;
+  }
+  .scratchCta {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+  }
+}
+
+.scratchCard:hover .scratchCta {
+  background: #143664;
+}
+
+html[data-theme="dark"] .scratchCard:hover .scratchCta {
+  background: #5b8ec5;
+}
+
+/* ══ Review screen (template summary, inline-editable) ═════════════════════ */
+.reviewLegend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 980px;
+  padding: 0.55rem 0.9rem;
+  border-radius: 11px;
+  background: var(--prefill-bg);
+  border: 1px solid var(--prefill-border);
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.reviewLegendSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--prefill-bg);
+  border: 1px solid var(--prefill-border);
+  flex-shrink: 0;
+}
+
+.reviewGroupTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1.1rem;
+}
+
+.reviewGroupTitle::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.reviewRow {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 0.75rem 1rem;
+  align-items: start;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.reviewRow:first-of-type {
+  border-top: none;
+}
+
+.reviewRowLabel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.55rem;
+}
+
+.autoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--prefill-bg);
+  border: 1px solid var(--prefill-border);
+  color: var(--accent);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+  .reviewRow {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .reviewRowLabel {
+    padding-top: 0;
+  }
+}
+
+/* Prefilled controls: light-blue "auto-filled" tint that clears once edited. */
+.prefill.comboboxInput,
+.prefill.textArea,
+.prefillInput.comboboxInput,
+.prefillInput.textArea {
+  background: var(--prefill-bg);
+  border-color: var(--prefill-border);
+}
+
+.reviewChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.reviewChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.reviewChip:hover {
+  border-color: var(--accent);
+}
+
+.reviewChip:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.reviewChipSelected,
+.reviewChipSelected:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.reviewChipPrefill {
+  background: var(--prefill-bg);
+  border-color: var(--prefill-border);
+}
+
+.reviewGroups {
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Draft source badge (Gemini vs local mock fallback) ── */
+.sourceBadge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.16rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--badge-border);
+  background: var(--badge-bg);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Amber "local draft" variant so a fallback is visually obvious. */
+.sourceBadgeMock {
+  border-color: #f0d0a0;
+  background: #fff7ed;
+  color: #b45309;
+}
+
+html[data-theme="dark"] .sourceBadgeMock {
+  border-color: #78350f;
+  background: #292217;
+  color: #fbbf24;
+}
+
+/* ── Grounded standards + abstention ──────────────────────────────────────
+   A code only reaches this markup after the server checked it against the
+   local standards dataset, so these chips are deliberately plain: they report
+   a verified fact rather than advertise a claim. */
+.standardsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0.2rem;
+}
+
+.standardChip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-2);
+  cursor: help;
+}
+
+.standardCode {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.standardFramework {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.noStandardNote {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Named gaps, shown to the teacher instead of being papered over. */
+.needsInfo {
+  margin: 0.9rem 0 0.4rem;
+  padding: 0.7rem 0.9rem;
+  border-left: 3px solid var(--border-hover);
+  background: var(--surface-2);
+  border-radius: 0 8px 8px 0;
+}
+
+.needsInfoTitle {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.needsInfoList {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+/* #10 The screening facts, plain text under the title. */
+.templateCardFacts {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+/* #11 The honest count, so four items reads as a small library rather than a
+   truncated one. */
+.pathCount {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+/* #3 What replaced the tinted "Create a new resource" banner: starting blank is
+   just the state before you pick an example, so it is a link, not a card. */
+.startBlankLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.startBlankLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.startBlankLink:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* #68 Teacher / student copy switch. A segmented control, because the two are
+   views of one document rather than two separate exports. */
+.audienceToggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.audienceBtn {
+  min-height: 40px;
+  padding: 0.4rem 0.8rem;
+  border: 0;
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 40px reads correctly in a dense toolbar but is under the touch minimum, and
+   this is the control a teacher hits most on a phone. The toggle only exists
+   once a draft is on screen, which is why earlier route-level tap-target sweeps
+   never measured it. */
+@media (pointer: coarse) {
+  .audienceBtn {
+    min-height: 44px;
+  }
+}
+
+.audienceBtn + .audienceBtn {
+  border-left: 1px solid var(--border);
+}
+
+.audienceBtn:hover {
+  color: var(--accent);
+}
+
+.audienceBtnOn,
+.audienceBtnOn:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.audienceBtn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* #52 Minutes beside the section heading. */
+.sectionMinutes {
+  float: right;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── #85/#86/#87 Toolbar popovers ────────────────────────────────────────── */
+.menuWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  min-width: 15rem;
+  max-width: min(20rem, calc(100vw - 2rem));
+  padding: 0.35rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.menuLabel {
+  margin: 0;
+  padding: 0.45rem 0.6rem 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  /* 44px minimum without a pseudo-element: these are stacked, so padding is
+     enough and an overlay would swallow the neighbour above. */
+  min-height: 44px;
+  justify-content: center;
+  padding: 0.45rem 0.6rem;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: var(--surface-2, rgba(0, 0, 0, 0.05));
+}
+
+.menuHint {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  /* Anchored to the TOOLBAR rather than to the button.
+ 
+     Neither edge works on its own once the action row wraps: right:0 hangs a
+     popover off the left when its trigger sits at the start of a row, and the
+     left:0 that fixed that pushed the Export menu 62px off the right, where four
+     of the print options could not be reached. The trigger can be at either end,
+     so anchoring to the trigger is the wrong idea at this width.
+ 
+     Making the wrapper static hands positioning to .docToolbar, which is sticky
+     and therefore a containing block, so left:0/right:0 spans the toolbar and the
+     menu cannot leave the screen from either side. */
+  .menuWrap {
+    position: static;
+  }
+
+  .menu {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    max-width: none;
+    width: auto;
+  }
+}
+
+@media print {
+  .menu,
+  .menuWrap {
+    display: none !important;
+  }
+}
+
+/* ── #83 Version name and diff ───────────────────────────────────────────── */
+.versionSummary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.5rem;
+  margin: 0.3rem 0 0;
+  min-width: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.versionName {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.versionDiff {
+  color: var(--muted);
+  /* Long section lists wrap rather than stretching the sticky toolbar. */
+  overflow-wrap: anywhere;
+}
+
+/* ── Per-section controls (#81 redo, #82 edit, #119 report) ──────────────── */
+/* The tools sit in the heading row and stay invisible until the section is
+   hovered or something inside it has focus. A document with three buttons
+   beside every heading reads as an admin panel, not a lesson plan. They are
+   always present for keyboard users, because revealing on hover alone would
+   make them unreachable without a mouse. */
+.sectionTools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin-left: auto;
+  padding-left: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.docSection:hover .sectionTools,
+.docSection:focus-within .sectionTools {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  /* No hover on touch, so the tools are simply always visible. */
+  .sectionTools {
+    opacity: 1;
+  }
+}
+
+.sectionToolBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.45rem;
+  min-height: 32px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.sectionToolBtn:hover:not(:disabled) {
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.sectionToolBtn:focus-visible {
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.sectionToolBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Touch targets. The labels are already hidden at this size, so the buttons are
+   icon-only and sized to a real 44px rather than given an invisible expander:
+   three 32px buttons spaced 2px apart would need overlapping hit areas to reach
+   44px, and overlapping means a tap meant for "Edit" can land on "This is
+   wrong". Three 44px buttons are 132px, which fits on its own wrapped row. */
+@media (pointer: coarse) {
+  .sectionTools {
+    gap: 0.25rem;
+  }
+  .sectionToolBtn {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
+/* The label drops away on narrow screens; the icon and the title attribute
+   carry it. Three labelled buttons do not fit beside a heading at 375px. */
+@media (max-width: 640px) {
+  .sectionToolLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+.docSectionBusy {
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.sectionBusyLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.editedFlag {
+  margin-left: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.1rem 0.3rem;
+}
+
+/* ── #82 Inline editor ───────────────────────────────────────────────────── */
+.editBox {
+  margin: 0.4rem 0 0;
+}
+
+.editArea {
+  width: 100%;
+  max-width: 68ch;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  resize: vertical;
+}
+
+.editArea:focus-visible {
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: 1px;
+}
+
+/* iOS Safari zooms the whole page when a focused textarea is under 16px, and
+   the teacher has to pinch back out to see what they are typing. 0.95rem is
+   right on a desktop; on a touch device the zoom costs more than the density
+   gains. Applies to the section body and the steps editor alike. */
+@media (pointer: coarse) {
+  .editArea {
+    font-size: 1rem;
+  }
+}
+
+.editHint {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.editActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.btnPrimarySm,
+.btnGhostSm {
+  min-height: 36px;
+  /* see the coarse-pointer override below */
+  padding: 0.4rem 0.85rem;
+  border-radius: 5px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Save and Cancel in the inline section editor, the block editor and the report
+   form. 36px suits a dense inline editor on a desktop, but these confirm or
+   discard a teacher's typing, which is the worst possible place for a mis-tap. */
+@media (pointer: coarse) {
+  .btnPrimarySm,
+  .btnGhostSm {
+    min-height: 44px;
+  }
+}
+
+.btnPrimarySm {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+}
+
+.btnPrimarySm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnGhostSm {
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+}
+
+.btnGhostSm:hover {
+  color: var(--text);
+}
+
+/* ── #119 Report form ────────────────────────────────────────────────────── */
+.reportForm {
+  margin: 0.5rem 0 0.8rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--muted);
+  border-radius: 0 5px 5px 0;
+  background: var(--surface-2, rgba(0, 0, 0, 0.02));
+  max-width: 68ch;
+}
+
+.reportTitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.reportReasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-bottom: 0.7rem;
+}
+
+.reportReason {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  /* 44px, matching .radio/.check in PlanningSheet. This was written at 32px,
+     which put the report form's reason radios below the touch minimum while
+     every other radio group in the app already cleared it. */
+  min-height: 44px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.reportNoteLabel {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.reportNote {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  resize: vertical;
+}
+
+.reportPrivacy {
+  margin: 0.5rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ── #80 Review flags in the margin ──────────────────────────────────────── */
+/* The document body is capped near 68ch, which leaves real margin on a wide
+   screen. The flag lives out there, beside its own section, instead of in a
+   drawer the teacher has to hold in their head while reading. */
+.docSection {
+  position: relative;
+}
+
+.marginFlags {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 0 0.7rem;
+}
+
+.marginFlag {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-left: 3px solid var(--flag, #b0341a);
+  border-radius: 0 4px 4px 0;
+  background: var(--surface-2, rgba(0, 0, 0, 0.02));
+}
+
+.marginFlagEye {
+  border-left-color: var(--muted);
+}
+
+.marginFlagMark {
+  flex: 0 0 auto;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--on-accent, #fff);
+  background: var(--flag, #b0341a);
+}
+
+.marginFlagEye .marginFlagMark {
+  background: var(--muted);
+}
+
+.marginFlagQ {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.marginFlagNote {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+/* Wide screens only: pull the flag out into the real margin beside the text.
+   Below this the margin does not exist, so the block above stands as written
+   and simply sits above the section.
+
+   The breakpoint is arithmetic, not taste. The canvas is 860px, the gutter is
+   24px and the flag is 208px, so the flag needs 860 + 2 x (24 + 208) = 1324px
+   before it stops pushing the page into horizontal scroll. At the 1180px I
+   first used, opening the review put a scrollbar on every wide-desktop draft. */
+@media (min-width: 1360px) {
+  .marginFlags {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 1.5rem);
+    width: 13rem;
+    margin: 0;
+  }
+}
+
+.checkMarkEye {
+  background: var(--muted) !important;
+  color: var(--on-accent, #fff) !important;
+}
+
+/* ── #77 Reading view ────────────────────────────────────────────────────── */
+/* Hides the app chrome and gives the document the window, which is the pattern
+   teachers already know from Google Docs. The document toolbar stays, because
+   removing every control would leave no way back out. */
+.readingView .docCanvas {
+  max-width: 8.5in;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+.readingViewBtnOn {
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+  border-color: var(--accent);
+}
+
+/* ── #78 Page breaks and letter proportions ──────────────────────────────── */
+.pageCount {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+@media print {
+  /* A section split across a page boundary is the single most common complaint
+     about printed lesson plans, so sections and blocks are kept whole. */
+  .docSection,
+  .marginFlags,
+  .reportForm {
+    break-inside: avoid;
+  }
+  .docSectionHeading {
+    break-after: avoid;
+  }
+  /* Authoring controls, review flags, and the rewrite bar are screen furniture.
+     None of it belongs on a handout. */
+  .sectionTools,
+  .marginFlags,
+  .aiToolbar,
+  .docToolbar,
+  .reviewDrawer,
+  .drawerScrim,
+  .reportForm,
+  .sourceBadge {
+    display: none !important;
+  }
+  .docCanvas {
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+  }
+  .docBody {
+    padding: 0;
+  }
+  /* Two columns survive on paper: this is the layout a plan template uses, and
+     it is the whole reason #53 exists. */
+  .stepText {
+    color: #000;
+  }
+}
+
+/* ── #83 Version naming and diff ─────────────────────────────────────────── */
+.versionPill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.versionPillNum {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+/* The name is what the teacher recognises; the number is only an ordinal. The
+   name is dropped on narrow screens where the pill row has to stay scrollable. */
+.versionPillName {
+  max-width: 11ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 860px) {
+  .versionPillName {
+    display: none;
+  }
+}
+
+.versionSummary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.6rem;
+  padding: 0.5rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2, rgba(0, 0, 0, 0.02));
+}
+
+.versionSummaryName {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.versionSummaryDiff {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+/* ── #50 Plan header on the results document ─────────────────────────────── */
+/* A metadata grid, the way a lesson plan header is laid out, rather than a row
+   of chips echoing raw field values. Empty fields are dropped rather than shown
+   as "Not set": this is the finished document, not the form. */
+.docPlanHeader {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.7rem 1.2rem;
+  margin: 0 0 1.4rem;
+  padding: 0 0 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.docPlanCell {
+  min-width: 0;
+}
+
+.docPlanKey {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.docPlanVal {
+  display: block;
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .docPlanHeader {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem 0.9rem;
+  }
+}
+
+/* ── #44 Drafting: real headings, arriving in order ──────────────────────── */
+.draftPlan {
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.draftPlanRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  /* Dimmed until its turn. Opacity only: moving the rows as they arrive would
+     shift the text a teacher is already reading. */
+  opacity: 0.32;
+  transition: opacity 0.45s ease;
+}
+
+.draftPlanRowOn {
+  opacity: 1;
+}
+
+.draftPlanLabel {
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.draftPlanMin {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No staged reveal for anyone who asked not to have one: every row is simply
+     present from the start. */
+  .draftPlanRow {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* ── #8 Real document preview on the example cards ───────────────────────── */
+/* A cropped first page at true document proportions, so the row reads as a
+   stack of photocopies on a desk rather than a feature grid. The text is real
+   and therefore too small to read, which is correct: this is a shape a teacher
+   recognises, and the title and facts below carry the actual information. */
+.templatePreview {
+  display: block;
+  height: 9rem;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  /* Fades out at the crop instead of cutting a line of text in half. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+}
+
+.templatePreviewPage {
+  display: block;
+  padding: 0.6rem 0.7rem;
+  transform: scale(0.92);
+  transform-origin: top left;
+}
+
+.templatePreviewTitle {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-head);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.templatePreviewSection {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.templatePreviewHeading {
+  display: block;
+  font-family: var(--font-head);
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.templatePreviewBody {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.45rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .templatePreview {
+    transition: none;
+  }
+}
+
+/* ── #12 Recently used ───────────────────────────────────────────────────── */
+.recentRow {
+  margin: 2rem 0 0;
+}
+
+.recentTitle {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-head);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.recentList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recentCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.recentCard:hover {
+  border-color: var(--accent);
+}
+
+.recentCard:focus-visible {
+  outline: 2px solid var(--focus, currentColor);
+  outline-offset: 2px;
+}
+
+.recentCardTitle {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  max-width: 22ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recentCardFacts {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+/* #82 Block editor panel */
+.blockEditor {
+  margin: 1.4rem 0 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface-2, rgba(0, 0, 0, 0.02));
+}
+
+.blockEditorTitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+@media print {
+  .blockEditor {
+    display: none !important;
+  }
+}
+
+/* ── #78 Page break indicators ───────────────────────────────────────────── */
+/* Absolute overlay: inserting these into the flow would change the very heights
+   they are estimating. Positioned against .docBody, which is the measured box. */
+.docBody {
+  position: relative;
+}
+
+.pageRule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px dashed var(--border);
+  pointer-events: none;
+}
+
+.pageRuleLabel {
+  position: absolute;
+  right: 0;
+  top: -0.6rem;
+  padding: 0 0.4rem;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media print {
+  .pageRule {
+    display: none !important;
+  }
+}
+
+/* ── Scoped printing ─────────────────────────────────────────────────────── */
+/* The teacher picks WHICH artifact to print; the document root carries the
+   choice and these rules decide what renders. Nothing in the component tree
+   knows a print scope exists, which is why Block only had to gain one
+   attribute.
+
+   Everything below is inside @media print, so the screen is never affected. */
+@media print {
+  /* Student handout: the audience toggle already strips teacher-only content,
+     so this drops the remaining teacher furniture. Most of it is already gated
+     in the component tree; listing it here anyway means the handout stays clean
+     even if one of those gates is later loosened. The plan header is the real
+     catch — course, standards and page count are for the teacher, not the
+     student holding the page. */
+  /* The student handout.
+ 
+     This was a deny-list while the two single-artifact scopes below are
+     allow-lists, and the asymmetry leaked: standards chips, meta pills and the
+     "add this and redraft for a better fit" note all printed on paper handed to
+     students. None of that is for them, and the standards row in particular is
+     departmental bookkeeping on a teenager's worksheet.
+ 
+     Kept as a deny-list rather than converted, because a handout legitimately
+     carries most of the document; the fix is naming the rest of the teacher
+     furniture. */
+  :global(html[data-print-scope="handout"]) [data-print="checks"],
+  :global(html[data-print-scope="handout"]) [data-print="prep"],
+  :global(html[data-print-scope="handout"]) [data-print="timing"],
+  :global(html[data-print-scope="handout"]) [data-print="plan-header"],
+  :global(html[data-print-scope="handout"]) [data-print="standards"],
+  :global(html[data-print-scope="handout"]) [data-print="sources"],
+  :global(html[data-print-scope="handout"]) .docMetaPills,
+  :global(html[data-print-scope="handout"]) .standardsRow,
+  :global(html[data-print-scope="handout"]) .needsInfo {
+    display: none !important;
+  }
+
+  /* Version furniture prints on EVERY artifact today, including exit-ticket
+     slips, because neither of these ever had a print rule. "Simplify the reading
+     level — rewrote Warm-up and hook" is a note to the author, not to whoever
+     holds the paper. */
+  .versionSummary,
+  .editedFlag {
+    display: none !important;
+  }
+
+  /* The single-artifact scopes are written as one allow-list each.
+ 
+     Two things this has to get right, both of which the first version got
+     wrong. The title must be exempted INSIDE the :not() chain rather than
+     re-shown by a later rule: both carry !important, so the more specific hide
+     rule wins regardless of source order and the title vanished. And the exit
+     ticket key is now its own sibling block rather than a child of the ticket,
+     so the answer-key scope has to exempt "exit-ticket-key" — exempting
+     "exit-ticket" was correct only while the key was nested inside it.
+ 
+     The title survives every scope deliberately: a stack of exit-ticket slips
+     on a desk cannot be told apart without it. */
+
+  /* Exit ticket: the questions, and never the key. */
+  :global(html[data-print-scope="exit-ticket"]) .docSection,
+  :global(html[data-print-scope="exit-ticket"])
+    [data-print]:not([data-print="title"]):not([data-print="exit-ticket"]),
+  :global(html[data-print-scope="exit-ticket"]) .docPlanHeader,
+  :global(html[data-print-scope="exit-ticket"]) .docMetaPills,
+  :global(html[data-print-scope="exit-ticket"]) .standardsRow,
+  :global(html[data-print-scope="exit-ticket"]) .needsInfo {
+    display: none !important;
+  }
+
+  /* Answer key: both keys together, which is what marking actually needs. */
+  :global(html[data-print-scope="answer-key"]) .docSection,
+  :global(html[data-print-scope="answer-key"])
+    [data-print]:not([data-print="title"]):not([data-print="answer-key"]):not([data-print="exit-ticket-key"]),
+  :global(html[data-print-scope="answer-key"]) .docPlanHeader,
+  :global(html[data-print-scope="answer-key"]) .docMetaPills,
+  :global(html[data-print-scope="answer-key"]) .standardsRow,
+  :global(html[data-print-scope="answer-key"]) .needsInfo {
+    display: none !important;
+  }
+
+  /* A single-artifact print should not open with a full lesson-plan masthead. */
+  :global(html[data-print-scope="exit-ticket"]) .docTitle,
+  :global(html[data-print-scope="answer-key"]) .docTitle {
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+  }
+}
+
+/* ── A generation that failed, stated plainly ────────────────────────────── */
+/* Occupies the same slot as the loading skeleton so the page does not jump.
+   Deliberately not styled as an alarm: most of what lands here is a rate limit
+   that clears in under a minute, and treating that like a crash would teach
+   teachers to distrust a tool that is working correctly. */
+.genError {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.4rem 1.5rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--flag, #b0341a);
+  border-radius: 0 10px 10px 0;
+  background: var(--surface);
+}
+
+.genErrorTitle {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.genErrorBody {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.genErrorActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.genErrorHint {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+/* ── Worksheet furniture ──────────────────────────────────────────────────
+   The student copy is the only artifact anyone writes on, and until now it had
+   nowhere to write. */
+.worksheetHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 1.4rem;
+  padding-bottom: 0.6rem;
+}
+.worksheetField,
+.worksheetFieldShort {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex: 1 1 12rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.worksheetFieldShort {
+  flex: 0 1 7rem;
+}
+/* The rule the student writes on, drawn as a border so it prints reliably —
+   a background gradient is the first thing a printer drops. */
+.worksheetField::after,
+.worksheetFieldShort::after {
+  content: "";
+  flex: 1 1 auto;
+  border-bottom: 1px solid var(--text);
+  height: 1.1em;
+}
+
+/* Ruled working space under a question. `data-lines` carries the size decision
+   made in answerLines(), so the room matches what the question actually asks. */
+.answerSpace {
+  display: block;
+  margin: 0.5rem 0 1.1rem;
+  border-bottom: 1px solid var(--border);
+  height: calc(1.9em * 2);
+}
+.answerSpace[data-lines="3"] { height: calc(1.9em * 3); }
+.answerSpace[data-lines="4"] { height: calc(1.9em * 4); }
+.answerSpace[data-lines="6"] { height: calc(1.9em * 6); }
+
+@media print {
+  .answerSpace {
+    border-bottom: 1px solid #000;
+    break-inside: avoid;
+  }
+  .worksheetField::after,
+  .worksheetFieldShort::after {
+    border-bottom-color: #000;
+  }
+}
+
+/* NO per-page running header or page number.
+ *
+ * Attempted twice and removed both times, so the reason is worth recording.
+ *
+ * 1. `@page { @bottom-right { content: "p. " counter(page) } }` is the CSS
+ *    answer, and Chrome PARSES it into a CSSMarginRule and then ignores it.
+ *    Paged-media margin boxes are a Prince/WeasyPrint feature; no browser
+ *    renders them. `CSS.supports("string-set", ...)` returns false too, so the
+ *    running-title half cannot work either.
+ * 2. Rendering a footer at each estimated page boundary fails for two
+ *    independent reasons: the boundaries live inside `.pageRule`, which print
+ *    deliberately hides, and app.css's print reset forces
+ *    `* { position: static !important }`, which collapses the absolutely
+ *    positioned boundary markers entirely.
+ *
+ * A `position: fixed` footer is not a third option: Chrome prints it on the
+ * first page only, Firefox repeats it, so it would be wrong somewhere.
+ *
+ * Doing this properly means paginating the document into real fixed-height page
+ * containers and giving each one a footer. That is a rework of the results
+ * renderer rather than a print rule, and it would also make the on-screen page
+ * breaks real instead of estimated. Worth doing; not done here.
+ */
+
+/* The blank-handout notice on the Student copy tab. Deliberately not styled as a
+   soft hint: an empty handout is a draft failure, and the teacher needs to know
+   before the copier, not after. */
+.emptyStudentCopy {
+  margin: 0 0 1.4rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--error);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+@media print {
+  /* A message ABOUT the artifact is not part of it. */
+  .emptyStudentCopy {
+    display: none;
+  }
+}
