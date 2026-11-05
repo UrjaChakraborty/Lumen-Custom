@@ -174,24 +174,30 @@ export function isAllowedContentType(req) {
 }
 
 // ── Body parsing + size cap ────────────────────────────────────────────────
-// Forms are tiny; a full draft (for /api/revise) is a few KB. 64 KB is a
-// generous ceiling that still blocks oversized-payload abuse.
+// Normal requests stay under 64 KB. Uploaded lesson revisions get a separate,
+// bounded 512 KB ceiling so a 200 KB text file plus JSON overhead can fit.
 export const MAX_BODY_BYTES = 64 * 1024;
+export const MAX_UPLOAD_BODY_BYTES = 512 * 1024;
 
-export function parseBody(req) {
+export function parseBody(req, { maxBytes = MAX_BODY_BYTES, allowLarger = () => false } = {}) {
   const raw = req.body;
   if (typeof raw === "string") {
-    if (Buffer.byteLength(raw, "utf8") > MAX_BODY_BYTES) return { error: "too_large" };
+    const bytes = Buffer.byteLength(raw, "utf8");
+    if (bytes > maxBytes) return { error: "too_large" };
     if (!raw) return { data: {} };
     try {
-      return { data: JSON.parse(raw) };
+      const data = JSON.parse(raw);
+      return bytes > MAX_BODY_BYTES && !allowLarger(data)
+        ? { error: "too_large" }
+        : { data };
     } catch {
       return { error: "invalid_json" };
     }
   }
   if (raw && typeof raw === "object") {
     try {
-      if (Buffer.byteLength(JSON.stringify(raw), "utf8") > MAX_BODY_BYTES) {
+      const bytes = Buffer.byteLength(JSON.stringify(raw), "utf8");
+      if (bytes > maxBytes || (bytes > MAX_BODY_BYTES && !allowLarger(raw))) {
         return { error: "too_large" };
       }
     } catch {
@@ -373,6 +379,7 @@ export function sanitizeCurrent(current) {
   return {
     kind: cleanString(current.kind, 40),
     title: cleanString(current.title, 400),
+    userUploaded: current.userUploaded === true,
     // periodLength and standards are what the REVISE route checks against, and
     // both used to be dropped here. The consequences were not cosmetic:
     //

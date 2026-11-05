@@ -27,7 +27,7 @@ const { loadClasses } = await import("../src/data/classes.js");
 const { loadMaterials, groupMaterials, searchMaterials, estimatePages } = await import(
   "../src/data/materials.js"
 );
-const { screenForPII } = await import("../src/engine/piiScreen.js");
+const { screenForPII, screenLongTextForPII } = await import("../src/engine/piiScreen.js");
 const { canonicalize } = await import("../src/engine/canonical.js");
 const { scanFigures } = await import("../src/engine/figures.js");
 const { deriveSources: deriveSrc } = await import("../api/_sources.js");
@@ -245,6 +245,7 @@ console.log("\n\x1b[1mPII screen covers every field that reaches the model\x1b[0
     ["directive with a phone number", { directive: "call 312-555-0142" }],
     ["topic with a named grade", { topic: "Aaliyah scored 42 on the quiz" }],
     ["interests with an SSN", { studentInterests: "123-45-6789" }],
+    ["uploaded plan with a named student and IEP", { uploadedLesson: "Marcus has an IEP and needs this activity modified." }],
   ];
   for (const [name, input] of cases) {
     const f = screenForPII(input);
@@ -261,6 +262,25 @@ console.log("\n\x1b[1mPII screen covers every field that reaches the model\x1b[0
     const f = screenForPII(c);
     check("pii", `stays quiet on: ${Object.values(c)[0].slice(0, 40)}`, f.length === 0, f.map((x) => x.id).join(","));
   }
+
+  const longCleanPlan = "Students explore the lesson objective. ".repeat(1200);
+  const latePIIPlan = `${"Students explore the lesson objective. ".repeat(1200)}Marcus has an IEP.`;
+  const boundaryEmail = `${"x".repeat(19_900)}!${"a".repeat(64)}@${"b.".repeat(120)}com`;
+  check(
+    "pii",
+    "screens long uploaded plan without an unscanned warning",
+    screenLongTextForPII("uploadedLesson", longCleanPlan).length === 0
+  );
+  check(
+    "pii",
+    "finds identifying information near the end of a long uploaded plan",
+    screenLongTextForPII("uploadedLesson", latePIIPlan).some((finding) => finding.id === "iep-named")
+  );
+  check(
+    "pii",
+    "finds long email addresses that cross a scan boundary",
+    screenLongTextForPII("uploadedLesson", boundaryEmail).some((finding) => finding.id === "email")
+  );
 }
 
 
@@ -339,6 +359,9 @@ console.log("\n\x1b[1mproduction CSP\x1b[0m");
     "connect-src 'self'": /connect-src 'self'/,
   };
   for (const [name, re] of Object.entries(required)) check("csp", `sets ${name}`, re.test(csp));
+  check("csp", "allows only the OCR data host for browser downloads",
+    /connect-src 'self' https:\/\/cdn\.jsdelivr\.net/.test(csp));
+  check("csp", "workers remain same-origin", /worker-src 'self'/.test(csp));
   check("csp", "script-src does NOT allow unsafe-inline", !/script-src[^;]*'unsafe-inline'/.test(csp), csp.match(/script-src[^;]*/)?.[0]);
   check("csp", "script-src does NOT allow unsafe-eval", !/script-src[^;]*'unsafe-eval'/.test(csp));
   for (const key of ["Strict-Transport-Security", "X-Frame-Options", "Referrer-Policy", "Permissions-Policy"])

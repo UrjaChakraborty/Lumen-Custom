@@ -10,7 +10,13 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { screenRequest, refusePII } from "./_pii.js";
-import { runGuards, parseBody, sanitizeCurrent, cleanString } from "./_security.js";
+import {
+  runGuards,
+  parseBody,
+  sanitizeCurrent,
+  cleanString,
+  MAX_UPLOAD_BODY_BYTES,
+} from "./_security.js";
 import {
   PROSE_STYLE_RULES,
   GROUNDING_RULES,
@@ -174,7 +180,10 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Server is not configured for generation." });
   }
 
-  const parsed = parseBody(req);
+  const parsed = parseBody(req, {
+    maxBytes: MAX_UPLOAD_BODY_BYTES,
+    allowLarger: (body) => body?.current?.userUploaded === true,
+  });
   if (parsed.error === "too_large") {
     return res.status(413).json({ error: "Request body too large." });
   }
@@ -195,7 +204,16 @@ export default async function handler(req, res) {
 
   // Last gate before the text reaches Google. See api/_pii.js — this route used
   // to accept a directive naming a student and their IEP status and return 200.
-  const pii = screenRequest({ input: parsed.data.input, directive });
+  const uploadedLesson = current.userUploaded
+    ? [
+        current.title,
+        ...current.sections.flatMap((section) => [
+          section.label,
+          ...(Array.isArray(section.body) ? section.body : [section.body]),
+        ]),
+      ].join("\n")
+    : "";
+  const pii = screenRequest({ input: parsed.data.input, directive, uploadedLesson });
   if (pii.length) return refusePII(res, pii);
 
   try {

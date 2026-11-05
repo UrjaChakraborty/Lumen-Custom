@@ -2987,6 +2987,60 @@ html[data-theme="dark"] .sourceBadgeMock {
   outline-offset: 2px;
 }
 
+.forkStartChoices {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: 0.8rem;
+  row-gap: 0.25rem;
+}
+
+.forkChoiceDivider {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.uploadPlanButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.uploadPlanButton:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.uploadPlanButton:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.uploadPlanButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.uploadPlanHint {
+  max-width: 620px;
+  margin: 0.15rem auto 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
 /* #68 Teacher / student copy switch. A segmented control, because the two are
    views of one document rather than two separate exports. */
 .audienceToggle {

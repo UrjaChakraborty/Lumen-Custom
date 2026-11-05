@@ -71,6 +71,7 @@ export const SCREENED_FIELDS = [
   "lastClass",
   "workSummary",
   "directive",
+  "uploadedLesson",
 ];
 
 const FIELD_LABELS = {
@@ -81,6 +82,7 @@ const FIELD_LABELS = {
   lastClass: "What students did last class",
   workSummary: "Student work summary",
   directive: "Your rewrite instruction",
+  uploadedLesson: "Uploaded lesson plan",
 };
 
 // Longest text any pattern is run against.
@@ -95,6 +97,7 @@ const FIELD_LABELS = {
 // "we did not look" as "we found nothing". Failing closed is the whole point of
 // this screen.
 const MAX_SCAN = 20_000;
+const SCAN_OVERLAP = 400;
 
 // Returns [] when clean. Each finding names the field, what was matched, and
 // the matched text, so the teacher can see exactly what tripped it.
@@ -128,6 +131,26 @@ export function screenForPII(input) {
     }
   }
   return findings;
+}
+
+export function screenLongTextForPII(field, text) {
+  const full = String(text || "");
+  const findings = new Map();
+  const step = MAX_SCAN - SCAN_OVERLAP;
+
+  for (let start = 0; start < full.length; start += step) {
+    const chunkFindings = screenForPII({ [field]: full.slice(start, start + MAX_SCAN) });
+    for (const finding of chunkFindings) {
+      const key = `${finding.field}:${finding.id}`;
+      const existing = findings.get(key);
+      if (!existing) {
+        findings.set(key, finding);
+      } else {
+        existing.samples = [...new Set([...existing.samples, ...finding.samples])].slice(0, 3);
+      }
+    }
+  }
+  return [...findings.values()];
 }
 
 export function describeFindings(findings) {

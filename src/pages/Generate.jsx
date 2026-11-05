@@ -17,7 +17,12 @@ import {
 } from "../data/inputSchema.js";
 import { scenarios } from "../data/scenarios.js";
 import { classToInput } from "../data/classes.js";
-import { screenForPII, describeFindings } from "../engine/piiScreen.js";
+import {
+  screenForPII,
+  screenLongTextForPII,
+  describeFindings,
+} from "../engine/piiScreen.js";
+import { PdfReadError, readLessonPlanPdf } from "../engine/readLessonPlanPdf.js";
 import {
   makeMaterial,
   newMaterialId,
@@ -62,6 +67,25 @@ const REVISION_ICONS = {
 // tracked separately from `versions` — undoing a revision must not hand back a
 // rewrite that was already spent.
 const MAX_REVISIONS = 10;
+const MAX_UPLOAD_BYTES = 200 * 1024;
+const UPLOAD_SECTION_CHARS = 7_000;
+
+function uploadedPlanSections(text) {
+  const sections = [];
+  for (let start = 0, part = 1; start < text.length; part += 1) {
+    let end = Math.min(start + UPLOAD_SECTION_CHARS, text.length);
+    if (end < text.length) {
+      const boundary = text.lastIndexOf(" ", end);
+      if (boundary > start) end = boundary;
+    }
+    sections.push({
+      label: `Uploaded lesson plan · Part ${part}`,
+      body: text.slice(start, end),
+    });
+    start = end;
+  }
+  return sections;
+}
 
 const assessmentFormats = [
   { value: "quiz", label: "Quiz" },
@@ -526,6 +550,9 @@ export default function Generate({
   // document. Holds the classified ApiError; null when there is nothing wrong.
   const [genError, setGenError] = useState(null);
   const [pageCount, setPageCount] = useState(0);
+  const [uploadingPlan, setUploadingPlan] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+  const uploadInputRef = useRef(null);
 
   // Whether switching to Student copy would show an empty document. Computed from
   // the sections rather than read from the server payload, so it stays true after
@@ -769,6 +796,103 @@ export default function Generate({
     setReview(null);
     setReviewOpen(false);
     go("sheet", -1);
+  };
+
+  const uploadLessonPlan = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    const isPdf = /\.pdf$/i.test(file.name);
+    if (!/\.(txt|md|markdown|pdf)$/i.test(file.name)) {
+      toast("Choose a plain-text, Markdown, or PDF lesson plan.");
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      toast("That file is too large. Upload a plan no larger than 200 KB.");
+      return;
+    }
+
+    setUploadingPlan(true);
+    setUploadProgress(isPdf ? "Reading PDF…" : "Reading plan…");
+    try {
+      const sourceText = isPdf
+        ? await readLessonPlanPdf(file, setUploadProgress)
+        : await file.text();
+      const text = sourceText
+        .replace(/\r\n?/g, "\n")
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, " ")
+        .trim();
+      if (!text) {
+        toast("That file is empty. Choose a lesson plan with text.");
+        return;
+      }
+
+      const title =
+        file.name
+          .replace(/\.(txt|md|markdown|pdf)$/i, "")
+          .replace(/[\u0000-\u001F\u007F\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, "")
+          .trim() || "Uploaded lesson plan";
+      const findings = screenLongTextForPII("uploadedLesson", `${title}\n${text}`);
+      if (findings.length) {
+        toast(`Not uploaded. ${describeFindings(findings)}`, { duration: 7000 });
+        return;
+      }
+
+      const sections = uploadedPlanSections(text);
+      if (!sections.length) {
+        toast("No lesson-plan text was found in that file.");
+        return;
+      }
+
+      const seed = { ...classPatch(), outputType: "lesson" };
+      const nextInput = { ...defaultInput, ...seed };
+      setInput(nextInput);
+      setPrefilled(new Set(Object.keys(seed)));
+      setFlow("custom");
+      setMaterialId(null);
+      setSavedAt(null);
+      setFiling({ classId: activeClass?.id || null, unit: nextInput.unit || "" });
+      setVersions([
+        withSectionIds(
+          withAssistanceLevel(
+            {
+              kind: "lesson",
+              title: title.slice(0, 300),
+              meta: ["Uploaded lesson plan"],
+              sections,
+              userUploaded: true,
+              _source: "upload",
+            },
+            nextInput
+          )
+        ),
+      ]);
+      setVersionIndex(0);
+      setRevisionsUsed(0);
+      setReview(null);
+      setReviewOpen(false);
+      setGenError(null);
+      setPiiFindings([]);
+      setCustomPrompt("");
+      setAudience("teacher");
+      setRewriteOpen(false);
+      setGenId((n) => n + 1);
+      go("results", -1);
+      toast("Lesson plan uploaded. Open “Ask for a change” to choose a refinement.");
+    } catch (err) {
+      console.error("Could not read uploaded lesson plan:", err);
+      toast(
+        err instanceof PdfReadError
+          ? err.message
+          : isPdf
+          ? "Could not read this PDF. It may be damaged, password-protected, or use unsupported encryption."
+          : "Could not read that file. Try a UTF-8 plain-text or Markdown file."
+      );
+    } finally {
+      setUploadingPlan(false);
+      setUploadProgress("");
+    }
   };
 
   const backToFork = () => {
@@ -1519,9 +1643,34 @@ export default function Generate({
           <>
             <div className={ex.forkIntro}>
               <p className={ex.question}>How do you want to start?</p>
-              <button type="button" className={ex.startBlankLink} onClick={startCustom}>
-                Start from a blank sheet
-              </button>
+              <div className={ex.forkStartChoices}>
+                <button type="button" className={ex.startBlankLink} onClick={startCustom}>
+                  Start from a blank sheet
+                </button>
+                <span className={ex.forkChoiceDivider}>or</span>
+                <button
+                  type="button"
+                  className={ex.uploadPlanButton}
+                  onClick={() => uploadInputRef.current?.click()}
+                  disabled={uploadingPlan}
+                  aria-busy={uploadingPlan}
+                >
+                  {uploadingPlan ? uploadProgress || "Reading plan…" : "Upload your own lesson plan"}
+                </button>
+                <input
+                  ref={uploadInputRef}
+                  className={ex.srOnly}
+                  type="file"
+                  accept=".txt,.md,.markdown,.pdf,text/plain,text/markdown,application/pdf"
+                  aria-label="Choose a plain-text, Markdown, or PDF lesson plan"
+                  onChange={uploadLessonPlan}
+                />
+              </div>
+              <p className={ex.uploadPlanHint}>
+                Plain text, Markdown, or PDF up to 200 KB (PDFs up to 40 pages). Scanned PDFs use
+                English OCR; the file stays in your browser. Remove student-identifying information
+                first. Your plan is sent to AI only when you request a change.
+              </p>
             </div>
 
             <motion.section

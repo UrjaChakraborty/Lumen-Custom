@@ -1,5 +1,53 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const projectRoot = path.dirname(fileURLToPath(import.meta.url))
+const OCR_ASSETS = [
+  'worker.min.js',
+  'tesseract-core-lstm.wasm.js',
+  'tesseract-core-lstm.wasm',
+]
+
+function tesseractAssets() {
+  const files = new Map(
+    OCR_ASSETS.map((name) => [
+      name,
+      path.join(
+        projectRoot,
+        'node_modules',
+        name === 'worker.min.js' ? 'tesseract.js/dist' : 'tesseract.js-core',
+        name
+      ),
+    ])
+  )
+
+  return {
+    name: 'tesseract-assets',
+    configureServer(server) {
+      server.middlewares.use('/ocr', async (req, res, next) => {
+        const name = (req.url || '').split('?')[0].replace(/^\/+/, '')
+        const file = files.get(name)
+        if (!file) return next()
+        try {
+          const contents = await readFile(file)
+          res.setHeader('Content-Type', name.endsWith('.wasm') ? 'application/wasm' : 'text/javascript; charset=utf-8')
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+          res.end(contents)
+        } catch (error) {
+          next(error)
+        }
+      })
+    },
+    async buildStart() {
+      for (const [name, file] of files) {
+        this.emitFile({ type: 'asset', fileName: `ocr/${name}`, source: await readFile(file) })
+      }
+    },
+  }
+}
 
 // Dev-only plugin: serve the /api/* serverless functions under `npm run dev`.
 // Vite normally ignores the /api directory (those run only on Vercel), so
@@ -23,11 +71,9 @@ function apiDevServer(env) {
         if (!req.url || !req.url.startsWith('/api/')) return next()
         try {
           // Buffer the request body, refusing anything oversized WHILE reading
-          // rather than after. The loop had no ceiling, so a large streamed body
-          // was held in memory in full before the 64KB check ever ran — the size
-          // guard could not fire because the damage was already done. Vercel caps
-          // this at the platform edge in production; dev has to cap it here.
-          const MAX = 64 * 1024
+          // rather than after. Uploaded revisions may reach 512KB; parseBody
+          // still rejects non-upload requests above 64KB.
+          const MAX = 512 * 1024
           const chunks = []
           let size = 0
           let tooLarge = false
@@ -118,7 +164,7 @@ export default defineConfig(({ mode }) => {
   // .env.local — used only here on the Node side, never exposed to the client.
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    plugins: [react(), apiDevServer(env)],
+    plugins: [react(), tesseractAssets(), apiDevServer(env)],
     server: {
       port: 5173,
       open: false,

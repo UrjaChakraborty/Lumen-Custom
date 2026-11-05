@@ -18,15 +18,18 @@
 // The patterns are imported rather than restated. Two copies of "what counts as
 // PII" would drift, and the copy that drifts is the one that stops matching.
 
-import { screenForPII } from "../src/engine/piiScreen.js";
+import { screenForPII, screenLongTextForPII } from "../src/engine/piiScreen.js";
 
 /**
  * @returns {Array} findings — empty when the payload is clean.
  */
-export function screenRequest({ input, directive } = {}) {
+export function screenRequest({ input, directive, uploadedLesson } = {}) {
   const findings = [...screenForPII(input || {})];
   if (typeof directive === "string" && directive.trim()) {
     findings.push(...screenForPII({ directive }));
+  }
+  if (typeof uploadedLesson === "string" && uploadedLesson.trim()) {
+    findings.push(...screenLongTextForPII("uploadedLesson", uploadedLesson));
   }
   return findings;
 }
