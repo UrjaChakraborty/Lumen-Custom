@@ -32,7 +32,7 @@ Because the app is a single-page app that uses the History API for clean URLs (`
 - Four generators: Lesson Plan · Activity/PBL · Assessment (quiz, exit ticket, rubric, multimodal) · Feedback (strengths, growth, reflection, family-friendly).
 - Review for Bias & Fit: a CRP/UDL checklist that flags deficit language, missing accessibility, and stereotype risk.
 - One-click revisions: make it more accessible, low-tech, multilingual, project-based, or strengthen cultural examples.
-- Upload lesson plans as plain text, Markdown, or PDF (200 KB; PDFs up to 40 pages). PDF text extraction and scanned-page English OCR run in the browser; OCR assets download only when needed. Uploaded lesson content is sent to AI only when a teacher requests a revision.
+- Upload lesson plans as plain text, Markdown, or PDF (200 KB; PDFs up to 200 pages). PDF text extraction attempts to recover content page-by-page, keeps readable text if OCR fails, and runs scanned-page English OCR in the browser. Unstructured text is sorted into familiar lesson-plan sections when possible, and uploaded drafts include an edit reminder. OCR assets download only when needed. Uploaded lesson content is sent to AI only when a teacher requests a revision.
 - Export: copy, Markdown, plain text, and print/PDF.
 - Prompt Library: a shared system prompt plus 15 structured, versioned templates.
 - Light & dark themes, keyboard-accessible, responsive, and reduced-motion aware.

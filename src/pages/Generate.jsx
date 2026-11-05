@@ -23,6 +23,7 @@ import {
   describeFindings,
 } from "../engine/piiScreen.js";
 import { PdfReadError, readLessonPlanPdf } from "../engine/readLessonPlanPdf.js";
+import { uploadedPlanSections } from "../engine/uploadedPlanSections.js";
 import {
   makeMaterial,
   newMaterialId,
@@ -68,24 +69,6 @@ const REVISION_ICONS = {
 // rewrite that was already spent.
 const MAX_REVISIONS = 10;
 const MAX_UPLOAD_BYTES = 200 * 1024;
-const UPLOAD_SECTION_CHARS = 7_000;
-
-function uploadedPlanSections(text) {
-  const sections = [];
-  for (let start = 0, part = 1; start < text.length; part += 1) {
-    let end = Math.min(start + UPLOAD_SECTION_CHARS, text.length);
-    if (end < text.length) {
-      const boundary = text.lastIndexOf(" ", end);
-      if (boundary > start) end = boundary;
-    }
-    sections.push({
-      label: `Uploaded lesson plan · Part ${part}`,
-      body: text.slice(start, end),
-    });
-    start = end;
-  }
-  return sections;
-}
 
 const assessmentFormats = [
   { value: "quiz", label: "Quiz" },
@@ -816,9 +799,15 @@ export default function Generate({
     setUploadingPlan(true);
     setUploadProgress(isPdf ? "Reading PDF…" : "Reading plan…");
     try {
-      const sourceText = isPdf
-        ? await readLessonPlanPdf(file, setUploadProgress)
-        : await file.text();
+      let sourceText;
+      let extractionWarnings = [];
+      if (isPdf) {
+        const extracted = await readLessonPlanPdf(file, setUploadProgress);
+        sourceText = extracted.text;
+        extractionWarnings = extracted.warnings;
+      } else {
+        sourceText = await file.text();
+      }
       const text = sourceText
         .replace(/\r\n?/g, "\n")
         .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, " ")
@@ -879,7 +868,11 @@ export default function Generate({
       setRewriteOpen(false);
       setGenId((n) => n + 1);
       go("results", -1);
-      toast("Lesson plan uploaded. Open “Ask for a change” to choose a refinement.");
+      toast(
+        extractionWarnings.length
+          ? `PDF imported with a note: ${extractionWarnings[0]} Review the sections and edit anything that looks wrong.`
+          : "Lesson plan uploaded. Review the sections and edit anything that looks wrong."
+      );
     } catch (err) {
       console.error("Could not read uploaded lesson plan:", err);
       toast(
@@ -992,6 +985,7 @@ export default function Generate({
     // whole document to find out what a rewrite did.
     revised._label = revisionActions.find((a) => a.id === actionId)?.label || text;
     revised.assistanceLevel = output.assistanceLevel;
+    revised.userUploaded = output.userUploaded === true;
     revised._changed = diffSections(output, revised);
     // Drop any "redo" branch, then append and jump to the new version.
     setVersions((prev) => [...prev.slice(0, versionIndex + 1), revised]);
@@ -1667,7 +1661,7 @@ export default function Generate({
                 />
               </div>
               <p className={ex.uploadPlanHint}>
-                Plain text, Markdown, or PDF up to 200 KB (PDFs up to 40 pages). Scanned PDFs use
+                Plain text, Markdown, or PDF up to 200 KB (PDFs up to 200 pages). Scanned PDFs use
                 English OCR; the file stays in your browser. Remove student-identifying information
                 first. Your plan is sent to AI only when you request a change.
               </p>
@@ -2339,6 +2333,13 @@ export default function Generate({
                         </span>
                       )}
                     </div>
+                  )}
+                  {output.userUploaded && audience !== "student" && (
+                    <p className={ex.uploadedPlanReviewNote} data-print="notice">
+                      This draft was organized from your PDF. Review the sections and choose
+                      <strong> Edit </strong>
+                      on any section that landed in the wrong place or needs correction.
+                    </p>
                   )}
 
                   {/* Standards are only shown once checked against the local

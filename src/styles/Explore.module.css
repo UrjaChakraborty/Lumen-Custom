@@ -1746,6 +1746,21 @@ html[data-theme="dark"] .cmpValue {
   font-weight: 600;
 }
 
+.uploadedPlanReviewNote {
+  margin: -1.2rem 0 1.5rem;
+  padding: 0.65rem 0.85rem;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.uploadedPlanReviewNote strong {
+  color: var(--text);
+}
+
 .docSection {
   margin-bottom: 2rem;
 }
@@ -4007,7 +4022,8 @@ html[data-theme="dark"] .sourceBadgeMock {
      level — rewrote Warm-up and hook" is a note to the author, not to whoever
      holds the paper. */
   .versionSummary,
-  .editedFlag {
+  .editedFlag,
+  .uploadedPlanReviewNote {
     display: none !important;
   }
 

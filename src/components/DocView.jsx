@@ -41,7 +41,7 @@ export default function DocView({ output, progressive = false }) {
                   ))}
                 </ul>
               ) : (
-                <p style={{ margin: 0 }}>{s.body}</p>
+                <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{s.body}</p>
               )}
             </div>
           </div>

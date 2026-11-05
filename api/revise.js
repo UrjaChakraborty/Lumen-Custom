@@ -155,6 +155,18 @@ function buildRevisePrompt(current, directive) {
           ``,
         ]
       : []),
+    ...(current?.userUploaded
+      ? [
+          `UPLOADED PLAN PRESERVATION. This is the teacher's existing lesson plan, not a blank`,
+          `template. Preserve its section headings, section order, sequence, and organization.`,
+          `Make the requested change in the relevant existing section(s), and update only`,
+          `other sections that must change to stay consistent. Keep all unaffected content`,
+          `and useful details. Do not collapse separate sections into a single paragraph,`,
+          `replace the plan with a generic template, or add a new section unless the request`,
+          `requires one. Keep the uploaded plan's line breaks and list structure where practical.`,
+          ``,
+        ]
+      : []),
     `DIRECTIVE. Apply this change by rewriting the WHOLE resource:`,
     directive,
     ``,
@@ -321,6 +333,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       promptVersion: PROMPT_VERSION,
       kind: current.kind || "lesson",
+      userUploaded: current.userUploaded === true,
       title: data.title || current.title || "Draft",
       meta: revisedMeta,
       standards,

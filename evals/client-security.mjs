@@ -28,6 +28,7 @@ const { loadMaterials, groupMaterials, searchMaterials, estimatePages } = await 
   "../src/data/materials.js"
 );
 const { screenForPII, screenLongTextForPII } = await import("../src/engine/piiScreen.js");
+const { uploadedPlanSections } = await import("../src/engine/uploadedPlanSections.js");
 const { canonicalize } = await import("../src/engine/canonical.js");
 const { scanFigures } = await import("../src/engine/figures.js");
 const { deriveSources: deriveSrc } = await import("../api/_sources.js");
@@ -280,6 +281,79 @@ console.log("\n\x1b[1mPII screen covers every field that reaches the model\x1b[0
     "pii",
     "finds long email addresses that cross a scan boundary",
     screenLongTextForPII("uploadedLesson", boundaryEmail).some((finding) => finding.id === "email")
+  );
+}
+
+console.log("\n\x1b[1muploaded plans retain their section structure\x1b[0m");
+{
+  const sections = uploadedPlanSections(
+    "# Page 1\n## Learning goals\nStudents interpret slope.\n\n## Materials and preparation\nGraph paper and pencils.\n\n## Teaching sequence\n1. Model the rate.\n2. Students practice.\n\n## Page 2\n## Exit ticket\nExplain the rate in context."
+  );
+  check("upload", "page markers do not become lesson sections", sections.length === 4, `${sections.length} sections`);
+  check(
+    "upload",
+    "original headings and order are retained",
+    sections.map((section) => section.label).join("|") ===
+      "Learning goals|Materials and preparation|Teaching sequence|Exit ticket",
+    sections.map((section) => section.label).join("|")
+  );
+  check(
+    "upload",
+    "each section retains its own original content",
+    sections[0]?.body.includes("Students interpret slope.") &&
+      sections[2]?.body.includes("1. Model the rate.") &&
+      sections[3]?.body.includes("Explain the rate in context.")
+  );
+  const plain = uploadedPlanSections("Lesson goals\nExplain slope.\n\nMaterials\nGrid paper.");
+  check(
+    "upload",
+    "plain-text plans retain recognizable section headings",
+    plain.map((section) => section.label).join("|") ===
+      "Learning goals|Materials and preparation",
+    plain.map((section) => section.label).join("|")
+  );
+  const withBullets = uploadedPlanSections(
+    "## Learning goals\n## - Interpret slope.\n## - Calculate the rate.\n## Materials\nGraph paper."
+  );
+  check(
+    "upload",
+    "PDF-extracted list items stay in their original section",
+    withBullets.length === 2 &&
+      withBullets[0].label === "Learning goals" &&
+      withBullets[0].body.includes("- Interpret slope.") &&
+      withBullets[0].body.includes("- Calculate the rate."),
+    withBullets.map((section) => section.label).join("|")
+  );
+  const nested = uploadedPlanSections(
+    "## Teaching sequence\n## 1 | Warm-up - 5 minutes\nShow the car table.\n## 2 | Model - 10 minutes\nCalculate the rate."
+  );
+  check(
+    "upload",
+    "empty parent headings stay attached to their first child section",
+    nested[0]?.label === "Teaching sequence · 1 | Warm-up - 5 minutes" &&
+      nested[1]?.label === "2 | Model - 10 minutes",
+    nested.map((section) => section.label).join("|")
+  );
+  const withIntro = uploadedPlanSections(
+    "Grade 9 Mathematics\n## Slope as a Rate of Change\nAn introductory lesson."
+  );
+  check(
+    "upload",
+    "document title and leading context stay together",
+    withIntro.length === 1 &&
+      withIntro[0].label === "Slope as a Rate of Change" &&
+      withIntro[0].body.includes("Grade 9 Mathematics"),
+    withIntro.map((section) => section.label).join("|")
+  );
+  const inferred = uploadedPlanSections(
+    "Students will explain how slope measures change.\n\nMaterials: graph paper and pencils.\n\nWarm-up: compare two rates.\n\nExit ticket: explain the units."
+  );
+  check(
+    "upload",
+    "unstructured text is sorted into familiar lesson sections",
+    inferred.map((section) => section.label).join("|") ===
+      "Learning goals|Materials and preparation|Teaching sequence|Assessment",
+    inferred.map((section) => section.label).join("|")
   );
 }
 
