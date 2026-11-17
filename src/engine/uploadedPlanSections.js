@@ -149,6 +149,7 @@ function formatTimedActivity(line) {
 function normalizeUploadedText(text) {
   return text
     .replace(/[\u2022\uF0B7\u25AA\u25CF\u25E6]/g, "\n")
+    .replace(/([.!?:;])\s+-\s+(?=[A-Z0-9])/g, "$1\n- ")
     .replace(
       /(^|\n)([ \t]*)(instruction\s*(?:\/|and)\s*methodology|methodology|teaching\s*methods?)(?=\s|$)/gi,
       "$1## $3\n"
@@ -160,6 +161,7 @@ function normalizeUploadedText(text) {
     .split("\n")
     .map(formatTimedActivity)
     .join("\n\n")
+    .replace(/\n{2,}(?=-\s)/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }

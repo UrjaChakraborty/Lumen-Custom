@@ -2559,7 +2559,11 @@ export default function Generate({
                             />
                           )}
 
-                          <div className={ex.docSectionBody}>
+                          <div
+                            className={`${ex.docSectionBody}${
+                              output.userUploaded ? ` ${ex.docSectionBodyPreserveLines}` : ""
+                            }`}
+                          >
                             {isEditing ? (
                               <div className={ex.editBox}>
                                 <label className={ex.srOnly} htmlFor={`edit-${sid}`}>
