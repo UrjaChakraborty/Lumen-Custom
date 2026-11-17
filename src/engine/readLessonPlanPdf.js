@@ -4,7 +4,7 @@ import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 const MAX_PDF_PAGES = 200;
-const OCR_TEXT_THRESHOLD = 120;
+const OCR_TEXT_THRESHOLD = 300;
 const OCR_MAX_DIMENSION = 1800;
 const OCR_LANG_PATH =
   "https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng/4.0.0_best_int";
@@ -16,7 +16,7 @@ export class PdfReadError extends Error {
   }
 }
 
-function pdfPageLines(items, pageHeight) {
+function pdfPageLines(items) {
   const positioned = items
     .filter((item) => typeof item?.str === "string" && item.str.trim())
     .map((item) => ({
@@ -49,7 +49,6 @@ function pdfPageLines(items, pageHeight) {
   return lines
     .sort((a, b) => b.y - a.y)
     .map((line) => {
-      if (line.y > pageHeight * 0.92 || line.y < pageHeight * 0.06) return null;
       const sorted = line.items.sort((a, b) => a.x - b.x);
       let text = "";
       let right = null;
@@ -121,18 +120,19 @@ async function recognizePage(page, worker) {
 }
 
 export async function readLessonPlanPdf(file, onProgress = () => {}) {
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const loadingTask = pdfjs.getDocument({
-    data: bytes,
-    isEvalSupported: false,
-    stopAtErrors: false,
-    useSystemFonts: true,
-  });
+  let loadingTask = null;
   let document;
   let ocrWorker = null;
   let ocrUnavailable = false;
   const warnings = [];
   try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    loadingTask = pdfjs.getDocument({
+      data: bytes,
+      isEvalSupported: false,
+      stopAtErrors: false,
+      useSystemFonts: true,
+    });
     document = await loadingTask.promise;
     const pagesToRead = Math.min(document.numPages, MAX_PDF_PAGES);
     if (document.numPages > pagesToRead) {
@@ -146,19 +146,24 @@ export async function readLessonPlanPdf(file, onProgress = () => {}) {
       try {
         page = await document.getPage(pageNumber);
       } catch {
-        warnings.push(`Page ${pageNumber} could not be opened and was skipped.`);
+        warnings.push(`Page ${pageNumber} could not be opened; the remaining pages were still checked.`);
         continue;
       }
 
       let extracted = "";
       try {
-        const pageHeight =
-          Math.abs(page.view?.[3] - page.view?.[1]) ||
-          page.getViewport({ scale: 1 }).height;
-        extracted = pdfPageLines(
-          (await page.getTextContent()).items,
-          pageHeight
-        ).join("\n");
+        const textContent = await page.getTextContent();
+        try {
+          extracted = pdfPageLines(textContent.items).join("\n");
+        } catch {
+          extracted = (textContent.items || [])
+            .map((item) => String(item?.str || "").trim())
+            .filter(Boolean)
+            .join(" ");
+          if (extracted) {
+            warnings.push(`Page ${pageNumber} text was recovered without its original layout.`);
+          }
+        }
       } catch {
         warnings.push(`Text extraction failed on page ${pageNumber}; OCR was attempted.`);
       }
@@ -172,7 +177,7 @@ export async function readLessonPlanPdf(file, onProgress = () => {}) {
           }
           onProgress(`Reading scanned page ${pageNumber} of ${pagesToRead}…`);
           const ocrText = await recognizePage(page, ocrWorker);
-          if (ocrText) text = ocrText;
+          if (ocrText.length > text.length) text = ocrText;
           else if (!extracted) warnings.push(`No text was recovered from page ${pageNumber}.`);
         } catch {
           ocrUnavailable = !ocrWorker;
@@ -211,13 +216,19 @@ export async function readLessonPlanPdf(file, onProgress = () => {}) {
       );
     }
     throw new PdfReadError(
-      "Text extraction failed for this PDF. Try exporting or printing it as a new PDF, then upload that copy."
+      "Lumen could not read or render this PDF. It may be damaged, password-protected, or use unsupported encryption. Try exporting a fresh PDF copy."
     );
   } finally {
     try {
       if (ocrWorker) await ocrWorker.terminate();
     } finally {
-      await loadingTask.destroy();
+      if (loadingTask) {
+        try {
+          await loadingTask.destroy();
+        } catch {
+          warnings.push("PDF cleanup was incomplete; the recovered text is still available.");
+        }
+      }
     }
   }
 }

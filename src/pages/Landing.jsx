@@ -4,10 +4,10 @@ import Icon from "../components/Icon.jsx";
 import landing from "../styles/Landing.module.css";
 
 const MODULES = [
-  { icon: "book", label: "Lesson Plan" },
-  { icon: "puzzle", label: "Activity / PBL" },
-  { icon: "clipboard", label: "Assessment" },
-  { icon: "message", label: "Feedback" },
+  { icon: "book", label: "Lesson Plan", route: "generate" },
+  { icon: "puzzle", label: "Activity / PBL", route: "generate" },
+  { icon: "clipboard", label: "Assessment", route: "generate" },
+  { icon: "message", label: "Feedback", route: "feedback" },
 ];
 
 const gridVariants = {
@@ -110,7 +110,7 @@ export default function Landing({ go }) {
                   type="button"
                   className={landing.metricCard}
                   variants={gridItemVariant}
-                  onClick={() => go("generate")}
+                  onClick={() => go(m.route)}
                 >
                   <span className={landing.metricCardFace}>
                     <span className={landing.metricCardIcon}>

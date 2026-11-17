@@ -284,6 +284,36 @@ console.log("\n\x1b[1mPII screen covers every field that reaches the model\x1b[0
   );
 }
 
+console.log("\n\x1b[1muploaded PDF activity layout\x1b[0m");
+{
+  const uploaded = [
+    "Instruction/ Methodology  10 min. - Hook - Whole group - Teacher will show students real crop samples. ",
+    "10 min. - Pair and share - Students will discuss where the products come from and write notes. ",
+    "15 min. - Small group - Students will test soil samples with pH strips and record their results. ",
+    "25 min. - Small group - Students will compare crop needs with their data and write a conclusion.",
+  ].join(" ");
+  const sections = uploadedPlanSections(uploaded);
+  const sequence = sections.find((section) => section.label === "Teaching sequence");
+  check("upload-format", "recognizes Instruction/Methodology as the teaching sequence", Boolean(sequence));
+  check(
+    "upload-format",
+    "splits timed activities into readable blocks",
+    sequence?.body.split(/\n\n/).length === 4,
+    sequence?.body.split(/\n\n/).length ?? "no sequence"
+  );
+  check(
+    "upload-format",
+    "keeps activity names, grouping, and directions together",
+    sequence?.body.includes("10 min · Hook · Whole group\nTeacher will show students real crop samples.") &&
+      sequence?.body.includes("15 min · Small group\nStudents will test soil samples")
+  );
+  check(
+    "upload-format",
+    "does not misclassify activity directions as learning goals",
+    !sections.some((section) => section.label === "Learning goals")
+  );
+}
+
 console.log("\n\x1b[1muploaded plans retain their section structure\x1b[0m");
 {
   const sections = uploadedPlanSections(

@@ -70,6 +70,23 @@ const REVISION_ICONS = {
 const MAX_REVISIONS = 10;
 const MAX_UPLOAD_BYTES = 200 * 1024;
 
+function lessonPlanText(output) {
+  const lines = [output?.title || "Lesson plan"];
+  for (const section of output?.sections || []) {
+    lines.push("", `## ${section.label || "Lesson section"}`);
+    if (Array.isArray(section.body)) {
+      lines.push(...section.body.map((item) => `- ${item}`));
+    } else if (section.body) {
+      lines.push(section.body);
+    }
+    for (const step of section.steps || []) {
+      if (step.teacher) lines.push(`Teacher: ${step.teacher}`);
+      if (step.students) lines.push(`Students: ${step.students}`);
+    }
+  }
+  return lines.join("\n").trim();
+}
+
 const assessmentFormats = [
   { value: "quiz", label: "Quiz" },
   { value: "exit", label: "Exit Ticket" },
@@ -474,6 +491,7 @@ export default function Generate({
   setMaterials = () => true,
   openMaterial = null,
   onConsumeOpenMaterial = () => {},
+  onReviewPlan = () => {},
 }) {
   const toast = useToast();
   const [flow, setFlow] = useState(null); // "template" | "custom" | null (fork)
@@ -1995,6 +2013,15 @@ export default function Generate({
                         </span>
                       )}
                     </button>
+                    {input.outputType === "lesson" && (
+                      <button
+                        type="button"
+                        className={ex.docActionBtn}
+                        onClick={() => onReviewPlan({ title: output.title, text: lessonPlanText(output) })}
+                      >
+                        <Icon name="clipboard" size="sm" /> Get feedback
+                      </button>
+                    )}
                     {/* #78 The page count drives the copier decision, so it sits
                         in the toolbar rather than buried in the document. */}
                     {pageCount > 0 && (

@@ -114,6 +114,13 @@ export default function SiteLayout({ children, route, go }) {
           </button>
           <button
             type="button"
+            className={`${linkClass("feedback")} ${styles.desktopNavItem}`}
+            onClick={() => go("feedback")}
+          >
+            Feedback
+          </button>
+          <button
+            type="button"
             className={`${linkClass("learn")} ${styles.desktopNavItem}`}
             onClick={() => go("learn")}
           >
@@ -166,6 +173,14 @@ export default function SiteLayout({ children, route, go }) {
                   onClick={() => go("materials")}
                 >
                   Materials
+                </button>
+                <button
+                  type="button"
+                  className={`${linkClass("feedback")} ${styles.moreItem}`}
+                  role="menuitem"
+                  onClick={() => go("feedback")}
+                >
+                  Feedback
                 </button>
                 <button
                   type="button"

@@ -53,6 +53,13 @@ const APPROACH_LEAD =
 
 const FEATURES = [
   {
+    title: "Lesson-plan feedback is grounded in your own sentences",
+    desc:
+      "Upload a PDF, text, or Markdown plan, or send a lesson from the Resource Builder. " +
+      "Lumen returns a short list of improvement ideas with exact excerpts and example " +
+      "rewrites. Student-identifying information is screened before the text reaches the AI.",
+  },
+  {
     title: "Student information is blocked, not just discouraged",
     desc:
       "Lumen screens what you type before anything is sent, and refuses the request if it " +

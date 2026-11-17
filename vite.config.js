@@ -133,6 +133,7 @@ function apiDevServer(env) {
             '/api/generate': '/api/generate.js',
             '/api/revise': '/api/revise.js',
             '/api/section': '/api/section.js',
+            '/api/feedback': '/api/feedback.js',
           }
           const file = ROUTES[path]
           if (!file) {

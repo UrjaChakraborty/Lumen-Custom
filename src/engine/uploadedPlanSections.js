@@ -1,5 +1,5 @@
 const MAX_SECTION_CHARS = 7_000;
-const KNOWN_SECTION = /^(?:\d+\s*[|.)]\s*)?(?:lesson overview|overview|lesson goals?|learning goals?|learning objectives?|learning targets?|objectives?|outcomes?|materials(?: and preparation)?|preparation|resources|supplies|key vocabulary|vocabulary|key terms?|pacing|lesson sequence|teaching sequence|procedure|procedures|activities|warm[- ]?up|hook|launch|model|direct instruction|guided practice|independent practice|independent check|partner investigation|assessment|evaluation|exit ticket|differentiation|accommodations?|access(?:ibility)? supports?|access, assessment, and next steps|scaffolded practice|low[- ]tech option|suggested key(?: and look-fors)?|language support|visual support|extension|closure|homework|teacher notes?|after class)(?:\s*[-:|].*)?$/i;
+const KNOWN_SECTION = /^(?:\d+\s*[|.)]\s*)?(?:lesson overview|overview|lesson goals?|learning goals?|learning objectives?|learning targets?|objectives?|outcomes?|materials(?: and preparation)?|preparation|resources|supplies|key vocabulary|vocabulary|key terms?|pacing|lesson sequence|teaching sequence|instruction\s*(?:\/|and)\s*methodology|methodology|teaching methods?|procedure|procedures|activities|warm[- ]?up|hook|launch|model|direct instruction|guided practice|independent practice|independent check|partner investigation|assessment|evaluation|exit ticket|differentiation|accommodations?|access(?:ibility)? supports?|access, assessment, and next steps|scaffolded practice|low[- ]tech option|suggested key(?: and look-fors)?|language support|visual support|extension|closure|homework|teacher notes?|after class)(?:\s*[-:|].*)?$/i;
 
 const SECTION_ORDER = [
   "Lesson overview",
@@ -27,6 +27,9 @@ function canonicalHeading(label) {
   if (/^(teaching|lesson) sequence$|^procedures?$|^activities$/.test(key)) {
     return "Teaching sequence";
   }
+  if (/^(instruction\s*(?:\/|and)\s*methodology|methodology|teaching methods?)$/.test(key)) {
+    return "Teaching sequence";
+  }
   if (/^(assessment|assessments|evaluation)$/.test(key)) return "Assessment";
   if (/^(warm[- ]?up|hook|launch|model|direct instruction|guided practice|independent practice|partner investigation|closure)$/.test(key)) {
     return "Teaching sequence";
@@ -39,7 +42,10 @@ function canonicalHeading(label) {
 }
 
 function inferSection(text) {
-  if (/\b(objectives?|learning goals?|learning targets?|students will|learning outcomes?)\b/i.test(text)) {
+  if (
+    /\b(objectives?|learning goals?|learning targets?|learning outcomes?)\b/i.test(text) ||
+    /\bstudents will (?:be able to|understand|identify|explain|calculate|describe|compare|analyze|create|evaluate|demonstrate)\b/i.test(text)
+  ) {
     return "Learning goals";
   }
   if (/\b(materials?|supplies|resources|equipment|prepare|preparation)\b/i.test(text)) {
@@ -52,7 +58,10 @@ function inferSection(text) {
   if (/\b(differentiat|accommodat|accessibility|language support|visual support|scaffold|extension)\b/i.test(text)) {
     return "Accessibility and differentiation";
   }
-  if (/\b(warm[- ]?up|hook|launch|procedure|teaching sequence|lesson sequence|guided practice|independent practice|partner work|investigation|closure|lesson activity|activity)\b/i.test(text)) {
+  if (
+    /\b(warm[- ]?up|hook|launch|procedure|teaching sequence|lesson sequence|guided practice|independent practice|partner work|investigation|closure|lesson activity|activity)\b/i.test(text) ||
+    /^\d+(?:\.\d+)?\s*(?:minutes?|mins?|hours?|hrs?)\s*[·-]/i.test(text)
+  ) {
     return "Teaching sequence";
   }
   return "Lesson overview";
@@ -118,7 +127,45 @@ function isPageHeading(line) {
   return /^#{1,3}\s+page\s+\d+\s*#*$/i.test(line);
 }
 
+function formatTimedActivity(line) {
+  const cleaned = line.replace(/^(?:[-*]\s+|\d+[.)]\s+)/, "").trim();
+  const match = cleaned.match(
+    /^(\d+(?:\.\d+)?\s*(?:minutes?|mins?|hours?|hrs?)(?:\.)?)\s*[-–—:]\s*(.+)$/i
+  );
+  if (!match) return line;
+
+  const parts = match[2].split(/\s+[-–—]\s+/).map((part) => part.trim()).filter(Boolean);
+  if (!parts.length) return line;
+
+  const activity = parts.shift();
+  const group = parts.length > 1 ? parts.shift() : "";
+  const description = parts.join(" — ");
+  const heading = [match[1].replace(/\.$/, ""), activity, group]
+    .filter(Boolean)
+    .join(" · ");
+  return description ? `${heading}\n${description}` : heading;
+}
+
+function normalizeUploadedText(text) {
+  return text
+    .replace(/[\u2022\uF0B7\u25AA\u25CF\u25E6]/g, "\n")
+    .replace(
+      /(^|\n)([ \t]*)(instruction\s*(?:\/|and)\s*methodology|methodology|teaching\s*methods?)(?=\s|$)/gi,
+      "$1## $3\n"
+    )
+    .replace(
+      /[ \t]+(?=\d+(?:\.\d+)?\s*(?:minutes?|mins?|hours?|hrs?)\.?\s*[-–—])/gi,
+      "\n"
+    )
+    .split("\n")
+    .map(formatTimedActivity)
+    .join("\n\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export function uploadedPlanSections(text) {
+  text = normalizeUploadedText(text);
   if (!/^\s*#{1,3}\s+/m.test(text)) return inferSections(text);
 
   const sections = [];

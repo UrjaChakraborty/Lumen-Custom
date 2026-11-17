@@ -8,6 +8,7 @@ import About from "./pages/About.jsx";
 import Learn from "./pages/Learn.jsx";
 import Classes from "./pages/Classes.jsx";
 import Materials from "./pages/Materials.jsx";
+import Feedback from "./pages/Feedback.jsx";
 import { defaultInput } from "./data/inputSchema.js";
 import {
   loadClasses,
@@ -27,6 +28,7 @@ const ROUTE_TO_PATH = {
   learn: "/method",
   classes: "/classes",
   materials: "/materials",
+  feedback: "/feedback",
 };
 const PATH_TO_ROUTE = {
   "/": "landing",
@@ -35,6 +37,7 @@ const PATH_TO_ROUTE = {
   "/method": "learn",
   "/classes": "classes",
   "/materials": "materials",
+  "/feedback": "feedback",
 };
 
 function routeFromLocation() {
@@ -100,10 +103,15 @@ export default function App() {
 
   // Opening a saved draft hands it to the builder, which jumps to results.
   const [openMaterial, setOpenMaterial] = useState(null);
+  const [feedbackPlan, setFeedbackPlan] = useState(null);
   const openInBuilder = (item) => {
     setOpenMaterial(item);
     setInput({ ...defaultInput, ...(item.input || {}) });
     go("generate");
+  };
+  const reviewLessonPlan = (plan) => {
+    setFeedbackPlan(plan);
+    go("feedback");
   };
 
   useRevealOnScroll(route);
@@ -161,6 +169,13 @@ export default function App() {
               setMaterials={setMaterials}
               openMaterial={openMaterial}
               onConsumeOpenMaterial={() => setOpenMaterial(null)}
+              onReviewPlan={reviewLessonPlan}
+            />
+          )}
+          {route === "feedback" && (
+            <Feedback
+              initialPlan={feedbackPlan}
+              onConsumeInitialPlan={() => setFeedbackPlan(null)}
             />
           )}
           {route === "about" && <About />}
